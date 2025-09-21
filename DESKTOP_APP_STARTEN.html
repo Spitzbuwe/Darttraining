@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desktop App starten - Autodarts</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .warning-box {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #ff4757;
+            text-align: center;
+        }
+        
+        .warning-box h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .step h4 {
+            margin-top: 0;
+            color: #4CAF50;
+            font-size: 1.3em;
+        }
+        
+        .step ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .step li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-check {
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #2196F3;
+        }
+        
+        .status-check h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        
+        .status-indicator {
+            font-size: 2em;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .connected { color: #4CAF50; }
+        .disconnected { color: #f44336; }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Autodarts Desktop App starten</h1>
+        
+        <div class="warning-box">
+            <h3>⚠️ WICHTIG: Desktop App muss laufen!</h3>
+            <p>Die Autodarts Desktop App ist <strong>NICHT</strong> gestartet. Du musst sie zuerst starten, damit die Kamera-Erkennung funktioniert.</p>
+        </div>
+        
+        <div class="status-check">
+            <h3>📊 Status prüfen</h3>
+            <div class="status-indicator" id="status-indicator">❌</div>
+            <p id="status-text">Desktop App nicht verbunden</p>
+            <button onclick="checkStatus()" class="button">Status prüfen</button>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 1: Autodarts Desktop App finden</h4>
+            <ol>
+                <li><strong>Suche nach "Autodarts"</strong> in deinem Startmenü</li>
+                <li><strong>Oder öffne den Autodarts Ordner</strong> auf deinem Desktop</li>
+                <li><strong>Oder suche in Program Files</strong> nach "Autodarts"</li>
+                <li><strong>Die App heißt meist:</strong> "Autodarts.exe" oder "Autodarts Desktop"</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 2: Desktop App starten</h4>
+            <ol>
+                <li><strong>Doppelklick auf Autodarts.exe</strong></li>
+                <li><strong>Warte bis die App vollständig geladen ist</strong></li>
+                <li><strong>Die App sollte sich im System-Tray öffnen</strong></li>
+                <li><strong>Prüfe, ob ein Browser-Fenster geöffnet wird</strong></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 3: In der Desktop App einloggen</h4>
+            <ol>
+                <li><strong>Öffne den Browser</strong> (meist automatisch)</li>
+                <li><strong>Gehe zu:</strong> <code>http://localhost:8080</code></li>
+                <li><strong>Logge dich ein</strong> mit deinen Autodarts-Daten</li>
+                <li><strong>Warte bis "Connected" angezeigt wird</strong></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 4: Kamera kalibrieren</h4>
+            <ol>
+                <li><strong>Gehe zu den Einstellungen</strong> in der Desktop App</li>
+                <li><strong>Wähle "Kamera" oder "Board Detection"</strong></li>
+                <li><strong>Richte die Kamera auf deine Dartscheibe aus</strong></li>
+                <li><strong>Führe die Kalibrierung durch</strong></li>
+                <li><strong>Teste mit einem Dart-Wurf</strong></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 5: Status prüfen</h4>
+            <ol>
+                <li><strong>Klicke auf "Status prüfen"</strong> oben</li>
+                <li><strong>Desktop App sollte "✅ Verbunden" anzeigen</strong></li>
+                <li><strong>Wenn nicht verbunden:</strong> Prüfe, ob die App läuft</li>
+                <li><strong>Wenn verbunden:</strong> Gehe zur Score Detection</li>
+            </ol>
+        </div>
+        
+        <div class="code-block">
+            <strong>Hilfe:</strong><br>
+            • Desktop App läuft auf Port 8080<br>
+            • Bridge läuft auf Port 8766<br>
+            • Web-Seite läuft auf Port 8080<br>
+            • Alle müssen gleichzeitig laufen!
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button onclick="checkStatus()" class="button">Status prüfen</button>
+            <a href="http://localhost:8080/simple_hybrid_detection.html" class="button">Zur Score Detection</a>
+            <a href="http://localhost:8080/working_index.html" class="button">Zur Hauptseite</a>
+        </div>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            
+            try {
+                // Prüfe Desktop App
+                const desktopResponse = await fetch('http://localhost:8080/status');
+                if (desktopResponse.ok) {
+                    statusIndicator.textContent = '✅';
+                    statusIndicator.className = 'status-indicator connected';
+                    statusText.textContent = 'Desktop App verbunden!';
+                } else {
+                    throw new Error('Desktop App nicht erreichbar');
+                }
+            } catch (error) {
+                statusIndicator.textContent = '❌';
+                statusIndicator.className = 'status-indicator disconnected';
+                statusText.textContent = 'Desktop App nicht verbunden - Bitte starten!';
+            }
+        }
+        
+        // Auto-Status prüfen alle 5 Sekunden
+        setInterval(checkStatus, 5000);
+        
+        // Initiale Prüfung
+        checkStatus();
+    </script>
+</body>
+</html>

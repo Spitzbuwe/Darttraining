@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampermonkey Anleitung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .step h3 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .warning {
+            background: rgba(255, 152, 0, 0.3);
+            border-left-color: #FF9800;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border-left-color: #4CAF50;
+        }
+
+        .highlight {
+            background: rgba(255, 255, 0, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Tampermonkey Setup - Autodarts Trainer</h1>
+
+        <div class="step success">
+            <h3>✅ Schritt 1: Tampermonkey installieren</h3>
+            <p>Installiere die Tampermonkey Browser-Erweiterung:</p>
+            <ul>
+                <li><strong>Chrome:</strong> <a href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" style="color: #FFD700;">Tampermonkey für Chrome</a></li>
+                <li><strong>Firefox:</strong> <a href="https://addons.mozilla.org/de/firefox/addon/tampermonkey/" target="_blank" style="color: #FFD700;">Tampermonkey für Firefox</a></li>
+                <li><strong>Edge:</strong> <a href="https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd" target="_blank" style="color: #FFD700;">Tampermonkey für Edge</a></li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>📝 Schritt 2: Script installieren</h3>
+            <p>Öffne die Datei <span class="highlight">autodarts_tampermonkey.user.js</span> und kopiere den gesamten Inhalt:</p>
+            <div class="code">
+                // ==UserScript==<br>
+                // @name         Autodarts Trainer - Score Capture<br>
+                // @namespace    http://tampermonkey.net/<br>
+                // @version      1.0<br>
+                // @description  Erfasst Scores von play.autodarts.io<br>
+                // @author       Autodarts Trainer<br>
+                // @match        https://play.autodarts.io/*<br>
+                // @grant        none<br>
+                // ==/UserScript==<br>
+                <br>
+                (function() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;'use strict';<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;console.log('🎯 Autodarts Trainer Script geladen');<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;// ... (rest des Scripts)
+            </div>
+        </div>
+
+        <div class="step">
+            <h3>🔧 Schritt 3: Script in Tampermonkey einfügen</h3>
+            <ol>
+                <li>Klicke auf das <strong>Tampermonkey-Icon</strong> in deinem Browser</li>
+                <li>Wähle <strong>"Dashboard"</strong></li>
+                <li>Klicke auf <strong>"+"</strong> (Neues Script)</li>
+                <li>Lösche den vorhandenen Code</li>
+                <li>Füge den kopierten Code ein</li>
+                <li>Drücke <strong>Ctrl+S</strong> zum Speichern</li>
+            </ol>
+        </div>
+
+        <div class="step warning">
+            <h3>⚠️ Schritt 4: Autodarts Trainer starten</h3>
+            <p>Starte den Autodarts Trainer bevor du zu play.autodarts.io gehst:</p>
+            <div class="code">
+                Doppelklick auf: <strong>start_camera.bat</strong>
+            </div>
+            <p>Oder manuell:</p>
+            <div class="code">
+                python autodarts_camera_bridge.py<br>
+                python -m http.server 8080
+            </div>
+        </div>
+
+        <div class="step success">
+            <h3>🎯 Schritt 5: Spielen!</h3>
+            <p>Jetzt kannst du spielen:</p>
+            <ol>
+                <li>Gehe zu <strong>play.autodarts.io</strong></li>
+                <li>Starte ein Match</li>
+                <li>Das Script erkennt automatisch deine Scores</li>
+                <li>Gehe zu <strong>http://localhost:8080/spiel_modi.html</strong></li>
+                <li>Wähle einen Spiel-Modus und spiele!</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔍 Wie es funktioniert</h3>
+            <p>Das Tampermonkey Script:</p>
+            <ul>
+                <li>✅ <strong>Überwacht</strong> alle Score-Änderungen auf play.autodarts.io</li>
+                <li>✅ <strong>Erkennt</strong> Scores in WebSocket-Nachrichten</li>
+                <li>✅ <strong>Sendet</strong> Scores automatisch an den Trainer</li>
+                <li>✅ <strong>Zeigt</strong> Status in einem Overlay an</li>
+                <li>✅ <strong>Funktioniert</strong> mit allen Spiel-Modi</li>
+            </ul>
+        </div>
+
+        <div class="step warning">
+            <h3>❌ Häufige Probleme</h3>
+            <p><strong>Problem:</strong> Script lädt nicht</p>
+            <p><strong>Lösung:</strong> Prüfe ob Tampermonkey aktiviert ist und das Script für play.autodarts.io läuft</p>
+            <br>
+            <p><strong>Problem:</strong> Scores werden nicht erkannt</p>
+            <p><strong>Lösung:</strong> Öffne die Browser-Konsole (F12) und prüfe die Logs</p>
+            <br>
+            <p><strong>Problem:</strong> Trainer nicht verbunden</p>
+            <p><strong>Lösung:</strong> Starte den Autodarts Trainer zuerst</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="spiel_modi.html" class="button">🎯 Zu den Spiel-Modi</a>
+            <a href="index.html" class="button">🏠 Zur Hauptseite</a>
+        </div>
+    </div>
+</body>
+</html>

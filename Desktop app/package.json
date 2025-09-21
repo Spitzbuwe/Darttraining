@@ -1,0 +1,71 @@
+{
+  "name": "autodarts-trainer-desktop",
+  "productName": "Autodarts Trainer Desktop",
+  "version": "1.0.0",
+  "description": "Professionelle Desktop-App für Autodarts Training mit eigenen Spielmodi",
+  "main": "src/main.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "npx electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "keywords": [
+    "darts",
+    "training",
+    "camera",
+    "ai",
+    "scoring",
+    "autodarts",
+    "desktop",
+    "electron"
+  ],
+  "author": {
+    "name": "Autodarts Trainer",
+    "email": "your-email@example.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^29.4.6",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.1.7",
+    "express": "^4.18.2",
+    "ws": "^8.14.2"
+  },
+  "optionalDependencies": {
+    "opencv4nodejs": "^5.6.0"
+  },
+  "build": {
+    "appId": "com.autodartstrainer.desktop",
+    "productName": "Autodarts Trainer Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
+  }
+}

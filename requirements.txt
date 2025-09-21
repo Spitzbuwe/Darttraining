@@ -1,0 +1,12 @@
+# Autodarts Trainer - Python Dependencies
+
+# Core dependencies
+requests>=2.25.0
+
+# Optional dependencies for enhanced functionality
+psutil>=5.8.0  # For process management (optional)
+
+# Development dependencies (optional)
+# pytest>=6.0.0
+# black>=21.0.0
+# flake8>=3.9.0

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Trainer - Spiel Interface</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+                <div class="logo">🎯 Autodarts Trainer</div>
+        <div class="header-controls">
+            <div class="status-indicator">
+                    <div class="status-dot"></div>
+                <span id="connectionStatus">Verbunden</span>
+                </div>
+            <button class="btn btn-secondary" onclick="openSettings()">⚙️ Einstellungen</button>
+            </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar - Board Management -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">📋 Meine Boards</h3>
+                <div style="font-size: 0.8rem; color: #00d4ff; margin-bottom: 1rem; padding: 0.5rem; background: rgba(0, 212, 255, 0.1); border-radius: 5px; border: 1px solid rgba(0, 212, 255, 0.3);">
+                    💡 Demo-Version: Boards werden lokal gespeichert
+                </div>
+                <ul class="board-list" id="boardList">
+                    <!-- Boards werden dynamisch geladen -->
+                </ul>
+                <button class="btn btn-primary" onclick="createNewBoard()" style="width: 100%; margin-top: 1rem;">
+                    ➕ Neues Board
+                </button>
+                </div>
+                
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">🎮 Spielmodi</h3>
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="selectGameMode('170-checkout-p5')">170 Checkout</button>
+                    <button class="btn btn-secondary" onclick="selectGameMode('123-leiter-p4')">123-Leiter</button>
+                    <button class="btn btn-secondary" onclick="selectGameMode('target-focus-programm1')">Target Focus</button>
+                    <button class="btn btn-secondary" onclick="selectGameMode('double-finish-programm2')">Double Finish</button>
+                    <button class="btn btn-secondary" onclick="selectGameMode('53-checkout-programm3')">53 Checkout</button>
+                </div>
+                </div>
+                
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">📊 Statistiken</h3>
+                <div class="statistics">
+                    <div class="stat-item">
+                        <span class="stat-label">Darts geworfen:</span>
+                        <span class="stat-value" id="totalDarts">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Durchschnitt:</span>
+                        <span class="stat-value" id="average">0.00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Höchstes Score:</span>
+                        <span class="stat-value" id="highestScore">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Checkouts:</span>
+                        <span class="stat-value" id="checkouts">0</span>
+                    </div>
+                </div>
+                </div>
+        </aside>
+
+        <!-- Game Area -->
+        <main class="game-area">
+            <div class="score-display">
+                <div class="current-score" id="currentScore">501</div>
+                <div class="game-mode" id="currentGameMode">Wählen Sie einen Spielmodus</div>
+                </div>
+                
+            <div class="dartboard-container">
+                <div class="dartboard">
+                    <div class="bullseye"></div>
+                </div>
+            </div>
+            
+            <div class="dart-history" id="dartHistory">
+                <!-- Dart-Historie wird hier angezeigt -->
+            </div>
+
+            <div class="control-buttons" style="margin-top: 2rem;">
+                <button class="btn btn-success" onclick="startGame()" id="startGameBtn">🎮 Spiel starten</button>
+                <button class="btn btn-danger" onclick="resetGame()" id="resetGameBtn">🔄 Zurücksetzen</button>
+                <button class="btn btn-secondary" onclick="undoLastDart()" id="undoBtn">↶ Rückgängig</button>
+            </div>
+        </main>
+
+        <!-- Right Control Panel -->
+        <aside class="control-panel">
+            <div class="camera-controls">
+                <h3>📹 Kamera</h3>
+                <div class="camera-preview" id="cameraPreview">
+                    <span>Kamera nicht verbunden</span>
+                </div>
+                <ul class="camera-list" id="cameraList">
+                    <!-- Kameras werden dynamisch geladen -->
+                </ul>
+                <button class="btn btn-primary" onclick="startCameraCalibration()" style="width: 100%;">
+                    🔧 Kalibrierung starten
+                </button>
+            </div>
+            
+            <div class="game-controls">
+                <h3>🎯 Spielsteuerung</h3>
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="manualScore(25)">Bull (25)</button>
+                    <button class="btn btn-secondary" onclick="manualScore(50)">Bullseye (50)</button>
+                    <button class="btn btn-secondary" onclick="manualScore(20)">20</button>
+                    <button class="btn btn-secondary" onclick="manualScore(19)">19</button>
+                    <button class="btn btn-secondary" onclick="manualScore(18)">18</button>
+                    <button class="btn btn-secondary" onclick="manualScore(17)">17</button>
+            </div>
+        </div>
+                
+                <div class="statistics">
+                <h3>📈 Aktuelle Session</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Runden:</span>
+                    <span class="stat-value" id="currentRounds">0</span>
+                    </div>
+                <div class="stat-item">
+                    <span class="stat-label">Zeit:</span>
+                    <span class="stat-value" id="sessionTime">00:00</span>
+                    </div>
+                <div class="stat-item">
+                    <span class="stat-label">Präzision:</span>
+                    <span class="stat-value" id="precision">0%</span>
+                    </div>
+                </div>
+        </aside>
+    </div>
+
+    <!-- Modals -->
+    <div id="boardConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Board-Konfiguration</h3>
+                <span class="close" onclick="closeModal('boardConfigModal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Board ID:</label>
+                <input type="text" class="form-input" id="boardIdInput" placeholder="Board ID eingeben">
+            </div>
+            <div class="form-group">
+                <label class="form-label">API Key:</label>
+                <input type="text" class="form-input" id="apiKeyInput" placeholder="API Key eingeben">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Board URL:</label>
+                <input type="text" class="form-input" id="boardUrlInput" placeholder="http://192.168.2.72:3180">
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="saveBoardConfig()">Speichern</button>
+                <button class="btn btn-secondary" onclick="testBoardConnection()">Testen</button>
+                <button class="btn btn-secondary" onclick="closeModal('boardConfigModal')">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cameraCalibrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Kamera-Kalibrierung</h3>
+                <span class="close" onclick="closeModal('cameraCalibrationModal')">&times;</span>
+            </div>
+            <div class="camera-preview" id="calibrationPreview" style="height: 300px;">
+                <span>Kamera wird initialisiert...</span>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p>Bitte positionieren Sie die Kamera so, dass das gesamte Dartboard sichtbar ist.</p>
+                <p>Klicken Sie auf die vier Ecken des Dartboards in folgender Reihenfolge:</p>
+                <ol style="margin: 1rem 0; padding-left: 2rem;">
+                    <li>Oben links</li>
+                    <li>Oben rechts</li>
+                    <li>Unten rechts</li>
+                    <li>Unten links</li>
+                </ol>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-primary" onclick="startCalibration()">Kalibrierung starten</button>
+                <button class="btn btn-secondary" onclick="closeModal('cameraCalibrationModal')">Abbrechen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification" class="notification"></div>
+    
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

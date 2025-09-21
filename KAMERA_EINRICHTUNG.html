@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Kamera-Einrichtung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .step h3 {
+            color: #FFD700;
+            margin-top: 0;
+        }
+
+        .warning {
+            background: rgba(255, 152, 0, 0.3);
+            border-left-color: #FF9800;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.3);
+            border-left-color: #4CAF50;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.3);
+            border-left-color: #f44336;
+        }
+
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .status-check {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .status-indicator {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .connected { color: #4CAF50; }
+        .disconnected { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 Autodarts Kamera-Einrichtung</h1>
+
+        <div class="step success">
+            <h3>✅ Schritt 1: Autodarts Desktop App starten</h3>
+            <p>Starte die <strong>Autodarts Desktop App</strong> und logge dich ein:</p>
+            <ul>
+                <li>Öffne die Autodarts Desktop App</li>
+                <li>Logge dich mit deinen Autodarts-Daten ein</li>
+                <li>Stelle sicher, dass du eingeloggt bist</li>
+            </ul>
+        </div>
+
+        <div class="step warning">
+            <h3>⚠️ Schritt 2: Kamera-Kalibrierung</h3>
+            <p>Kalibriere die 3 Kameras in der Desktop App:</p>
+            <ul>
+                <li>Gehe zu den <strong>Kamera-Einstellungen</strong></li>
+                <li>Kalibriere alle 3 Kameras</li>
+                <li>Teste die Kamera-Erkennung</li>
+                <li>Stelle sicher, dass die Kameras deine Würfe erkennen</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>🎯 Schritt 3: Kamera-Test</h3>
+            <p>Teste ob die Kameras funktionieren:</p>
+            <ul>
+                <li>Wirf einen Dart auf die Scheibe</li>
+                <li>Prüfe ob der Score in der Desktop App angezeigt wird</li>
+                <li>Teste verschiedene Bereiche der Scheibe</li>
+                <li>Stelle sicher, dass alle 3 Kameras aktiv sind</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>🚀 Schritt 4: Autodarts Trainer starten</h3>
+            <p>Starte den Autodarts Trainer mit Kamera-Erkennung:</p>
+            <div class="code">
+                Doppelklick auf: <strong>start_camera.bat</strong>
+            </div>
+        </div>
+
+        <div class="status-check">
+            <h3>🔍 Status-Prüfung</h3>
+            <div class="status-indicator" id="status-indicator">❌</div>
+            <p id="status-text">Prüfe Verbindung...</p>
+            <button class="button" onclick="checkStatus()">Status prüfen</button>
+        </div>
+
+        <div class="step error">
+            <h3>❌ Häufige Probleme</h3>
+            <p><strong>Problem:</strong> Kameras erkennen keine Würfe</p>
+            <p><strong>Lösung:</strong></p>
+            <ul>
+                <li>Prüfe die Kamera-Kalibrierung in der Desktop App</li>
+                <li>Stelle sicher, dass alle 3 Kameras aktiv sind</li>
+                <li>Teste die Beleuchtung - nicht zu hell, nicht zu dunkel</li>
+                <li>Prüfe ob die Kameras sauber sind</li>
+            </ul>
+        </div>
+
+        <div class="step error">
+            <h3>❌ Desktop App nicht gefunden</h3>
+            <p><strong>Problem:</strong> "Autodarts Desktop App nicht gefunden"</p>
+            <p><strong>Lösung:</strong></p>
+            <ul>
+                <li>Starte die Autodarts Desktop App zuerst</li>
+                <li>Logge dich in der Desktop App ein</li>
+                <li>Stelle sicher, dass die Desktop App läuft</li>
+                <li>Starte dann den Autodarts Trainer erneut</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="spiel_modi.html" class="button">🎯 Zu den Spiel-Modi</a>
+            <a href="index.html" class="button">🏠 Zur Hauptseite</a>
+        </div>
+    </div>
+
+    <script>
+        function checkStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            
+            statusText.textContent = 'Prüfe Verbindung...';
+            
+            fetch('http://localhost:8766/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.desktop_connected) {
+                        statusIndicator.textContent = '✅';
+                        statusIndicator.className = 'status-indicator connected';
+                        statusText.textContent = `Verbunden! Benutzer: ${data.username || 'Unbekannt'}`;
+                    } else {
+                        statusIndicator.textContent = '❌';
+                        statusIndicator.className = 'status-indicator disconnected';
+                        statusText.textContent = 'Desktop App nicht verbunden';
+                    }
+                })
+                .catch(error => {
+                    statusIndicator.textContent = '❌';
+                    statusIndicator.className = 'status-indicator disconnected';
+                    statusText.textContent = 'Verbindungsfehler - Bridge läuft nicht';
+                });
+        }
+
+        // Auto-check beim Laden
+        checkStatus();
+    </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echte Lösung - Autodarts Kamera-Integration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .warning-box {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #ff4757;
+            text-align: center;
+        }
+        
+        .warning-box h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .solution-box {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #2e7d32;
+        }
+        
+        .solution-box h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .step h4 {
+            margin-top: 0;
+            color: #4CAF50;
+            font-size: 1.3em;
+        }
+        
+        .step ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .step li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-box {
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #2196F3;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+        
+        .problem-list {
+            background: rgba(244, 67, 54, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #f44336;
+        }
+        
+        .problem-list h3 {
+            margin-top: 0;
+            color: #f44336;
+        }
+        
+        .problem-list ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .problem-list li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Echte Lösung für Autodarts Kamera-Integration</h1>
+        
+        <div class="warning-box">
+            <h3>⚠️ WICHTIG: Das Problem verstehen</h3>
+            <p>Unser Bridge-Service kann <strong>NICHT</strong> direkt mit den Kameras kommunizieren. Nur die Autodarts Desktop App hat Zugang zu den Kameras für die Score-Erkennung.</p>
+        </div>
+        
+        <div class="problem-list">
+            <h3>❌ Warum es nicht funktioniert</h3>
+            <ul>
+                <li><strong>Kamera-Zugang:</strong> Nur die Autodarts Desktop App kann die Kameras für Score-Erkennung nutzen</li>
+                <li><strong>Browser-Limitation:</strong> Browser können nicht direkt auf lokale Kameras für Dart-Score-Erkennung zugreifen</li>
+                <li><strong>WebSocket-Verbindung:</strong> Die WebSocket-Verbindung zu play.autodarts.io funktioniert, aber es kommen keine echten Scores</li>
+                <li><strong>Simulierte Scores:</strong> Unser Bridge generiert nur zufällige Scores, keine echten Kamera-basierten</li>
+            </ul>
+        </div>
+        
+        <div class="solution-box">
+            <h3>✅ Die echte Lösung</h3>
+            <p>Du musst <strong>beide Systeme gleichzeitig</strong> nutzen:</p>
+            <ul>
+                <li><strong>Autodarts Desktop App</strong> für die Kamera-basierte Score-Erkennung</li>
+                <li><strong>play.autodarts.io</strong> im Browser für das Spiel</li>
+                <li><strong>Hybrid Bridge</strong> verbindet beide Systeme</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 1: Autodarts Desktop App einrichten</h4>
+            <ol>
+                <li><strong>Autodarts Desktop App starten</strong></li>
+                <li><strong>In der Desktop App einloggen</strong> (wichtig für die Score-Erkennung)</li>
+                <li><strong>Kamera kalibrieren:</strong>
+                    <ul>
+                        <li>Gehe zu den Einstellungen in der Desktop App</li>
+                        <li>Wähle "Kamera" oder "Board Detection"</li>
+                        <li>Richte die Kamera auf deine Dartscheibe aus</li>
+                        <li>Führe die Kalibrierung durch</li>
+                    </ul>
+                </li>
+                <li><strong>Teste die Score-Erkennung:</strong> Wirf einen Dart und prüfe, ob der Score erkannt wird</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 2: Hybrid Bridge starten</h4>
+            <ol>
+                <li><strong>Hybrid Bridge starten:</strong>
+                    <div class="code-block">
+                        python autodarts_hybrid_bridge.py
+                    </div>
+                </li>
+                <li><strong>HTTP Server starten:</strong>
+                    <div class="code-block">
+                        python -m http.server 8080
+                    </div>
+                </li>
+                <li><strong>Hybrid Score Detection öffnen:</strong>
+                    <a href="http://localhost:8080/hybrid_score_detection.html" class="button">Hybrid Score Detection öffnen</a>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 3: Browser-Spiel starten</h4>
+            <ol>
+                <li><strong>play.autodarts.io im Browser öffnen</strong></li>
+                <li><strong>In den Browser einloggen</strong></li>
+                <li><strong>Ein Match starten</strong></li>
+                <li><strong>Hybrid Bridge verbindet beide Systeme</strong></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h4>Schritt 4: Auto-Score aktivieren</h4>
+            <ol>
+                <li><strong>In der Hybrid Score Detection Seite</strong></li>
+                <li><strong>"Auto-Score starten" klicken</strong></li>
+                <li><strong>Status prüfen:</strong> Desktop App sollte verbunden sein</li>
+                <li><strong>Testen:</strong> Wirf einen Dart und prüfe, ob der Score erkannt wird</li>
+            </ol>
+        </div>
+        
+        <div class="info-box">
+            <h3>💡 Wie es funktioniert</h3>
+            <p>Der Hybrid Bridge:</p>
+            <ul>
+                <li><strong>Verbindet sich mit der Desktop App</strong> um echte Kamera-basierte Scores zu erhalten</li>
+                <li><strong>Verbindet sich mit play.autodarts.io</strong> um das Spiel zu verfolgen</li>
+                <li><strong>Überträgt die Scores</strong> zwischen beiden Systemen</li>
+                <li><strong>Stellt eine API bereit</strong> für die Frontend-Integration</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h4>🔧 Troubleshooting</h4>
+            <ol>
+                <li><strong>Desktop App nicht verbunden:</strong>
+                    <ul>
+                        <li>Stelle sicher, dass die Desktop App läuft</li>
+                        <li>Prüfe, ob du eingeloggt bist</li>
+                        <li>Teste die Kamera-Kalibrierung</li>
+                    </ul>
+                </li>
+                <li><strong>Keine Scores erkannt:</strong>
+                    <ul>
+                        <li>Prüfe die Kamera-Kalibrierung in der Desktop App</li>
+                        <li>Stelle sicher, dass die Dartscheibe gut beleuchtet ist</li>
+                        <li>Teste mit einem einfachen Score (z.B. 20)</li>
+                    </ul>
+                </li>
+                <li><strong>Browser nicht verbunden:</strong>
+                    <ul>
+                        <li>Stelle sicher, dass du auf play.autodarts.io eingeloggt bist</li>
+                        <li>Prüfe die WebSocket-Verbindung</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="solution-box">
+            <h3>🎯 Zusammenfassung</h3>
+            <p>Für echte Kamera-basierte Score-Erkennung musst du:</p>
+            <ol>
+                <li><strong>Autodarts Desktop App</strong> für die Kamera-Erkennung nutzen</li>
+                <li><strong>play.autodarts.io</strong> für das Spiel nutzen</li>
+                <li><strong>Hybrid Bridge</strong> als Verbindung zwischen beiden Systemen</li>
+                <li><strong>Beide Systeme gleichzeitig</strong> laufen lassen</li>
+            </ol>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:8080/hybrid_score_detection.html" class="button">Hybrid Score Detection starten</a>
+            <a href="http://localhost:8080/working_index.html" class="button">Zurück zur Hauptseite</a>
+        </div>
+    </div>
+</body>
+</html>

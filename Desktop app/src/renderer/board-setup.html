@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Board Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .setup-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #90cdf4;
+            text-shadow: 0 0 20px rgba(144, 205, 244, 0.6);
+            background: linear-gradient(45deg, #90cdf4, #63b3ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #ccc;
+            margin-bottom: 40px;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .step-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #90cdf4;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: #90cdf4;
+            color: #1a1a2e;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #90cdf4;
+            box-shadow: 0 0 15px rgba(144, 205, 244, 0.3);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #90cdf4, #63b3ed);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(144, 205, 244, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #63b3ed, #90cdf4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(144, 205, 244, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: rgba(144, 205, 244, 0.1);
+            border: 1px solid rgba(144, 205, 244, 0.3);
+            color: #90cdf4;
+        }
+        
+        .status.error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            color: #ff4444;
+        }
+        
+        .status.info {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+        }
+        
+        .board-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #90cdf4;
+        }
+        
+        .info-value {
+            color: #ccc;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: #90cdf4;
+            color: #1a1a2e;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #63b3ed;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="logo">🎯 AUTODARTS</div>
+        <div class="subtitle">Board Setup & Konfiguration</div>
+        
+        <!-- Schritt 1: Board-Informationen anzeigen -->
+        <div class="step">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                Board-Informationen
+            </div>
+            <div class="board-info" id="boardInfo">
+                <div class="info-item">
+                    <span class="info-label">Board-ID:</span>
+                    <span class="info-value" id="boardIdDisplay">-</span>
+                    <button class="copy-btn" onclick="copyToClipboard('boardIdDisplay')">📋</button>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">API-Key:</span>
+                    <span class="info-value" id="apiKeyDisplay">-</span>
+                    <button class="copy-btn" onclick="copyToClipboard('apiKeyDisplay')">📋</button>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Board-URL:</span>
+                    <span class="info-value" id="boardUrlDisplay">-</span>
+                    <button class="copy-btn" onclick="copyToClipboard('boardUrlDisplay')">📋</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Schritt 2: Board-Konfiguration -->
+        <div class="step">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                Board-Konfiguration
+            </div>
+            <div class="form-group">
+                <label for="boardIdInput">Board-ID:</label>
+                <input type="text" id="boardIdInput" placeholder="board-xxxxx" readonly>
+            </div>
+            <div class="form-group">
+                <label for="apiKeyInput">API-Key:</label>
+                <input type="password" id="apiKeyInput" placeholder="Ihr API-Key hier eingeben">
+            </div>
+            <div class="form-group">
+                <label for="boardUrlInput">Board-URL:</label>
+                <input type="text" id="boardUrlInput" placeholder="http://192.168.2.72:3180">
+            </div>
+        </div>
+        
+        <!-- Schritt 3: Verbindung testen -->
+        <div class="step">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                Verbindung testen
+            </div>
+            <button class="btn btn-secondary" onclick="testConnection()">🧪 Verbindung testen</button>
+            <div id="connectionStatus"></div>
+        </div>
+        
+        <!-- Schritt 4: An App übertragen -->
+        <div class="step">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                An App übertragen
+            </div>
+            <button class="btn btn-primary" onclick="transferToApp()">🚀 An App übertragen</button>
+            <div id="transferStatus"></div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="btn btn-secondary" onclick="window.close()">❌ Schließen</button>
+        </div>
+    </div>
+    
+    <script>
+        class BoardSetup {
+            constructor() {
+                this.boardId = '';
+                this.apiKey = '';
+                this.boardUrl = '';
+                this.init();
+            }
+            
+            init() {
+                // Lade Parameter aus URL
+                const urlParams = new URLSearchParams(window.location.search);
+                this.boardId = urlParams.get('boardId') || '';
+                this.apiKey = urlParams.get('apiKey') || '';
+                this.boardUrl = urlParams.get('boardUrl') || 'http://192.168.2.72:3180';
+                
+                // Fülle Formular
+                document.getElementById('boardIdInput').value = this.boardId;
+                document.getElementById('apiKeyInput').value = this.apiKey;
+                document.getElementById('boardUrlInput').value = this.boardUrl;
+                
+                // Zeige Board-Informationen
+                this.updateBoardInfo();
+            }
+            
+            updateBoardInfo() {
+                document.getElementById('boardIdDisplay').textContent = this.boardId;
+                document.getElementById('apiKeyDisplay').textContent = this.apiKey || 'Nicht konfiguriert';
+                document.getElementById('boardUrlDisplay').textContent = this.boardUrl;
+            }
+            
+            async testConnection() {
+                const statusDiv = document.getElementById('connectionStatus');
+                statusDiv.innerHTML = '<div class="status info">Teste Verbindung...</div>';
+                
+                try {
+                    const response = await fetch(`${this.boardUrl}/api/config`);
+                    
+                    if (response.ok) {
+                        const boardData = await response.json();
+                        statusDiv.innerHTML = `
+                            <div class="status success">
+                                ✅ Verbindung erfolgreich!<br>
+                                Board-ID: ${boardData.auth?.board_id || 'N/A'}<br>
+                                Kameras: ${boardData.cam?.cams?.length || 0}
+                            </div>
+                        `;
+                        
+                        // Aktualisiere Board-ID falls sie sich geändert hat
+                        if (boardData.auth?.board_id && boardData.auth.board_id !== this.boardId) {
+                            this.boardId = boardData.auth.board_id;
+                            document.getElementById('boardIdInput').value = this.boardId;
+                            this.updateBoardInfo();
+                        }
+                        
+                        // Aktualisiere API-Key falls vorhanden
+                        if (boardData.auth?.api_key) {
+                            this.apiKey = boardData.auth.api_key;
+                            document.getElementById('apiKeyInput').value = this.apiKey;
+                            this.updateBoardInfo();
+                        }
+                        
+                    } else {
+                        statusDiv.innerHTML = '<div class="status error">❌ Board-URL nicht erreichbar!</div>';
+                    }
+                } catch (error) {
+                    statusDiv.innerHTML = `<div class="status error">❌ Verbindung fehlgeschlagen: ${error.message}</div>`;
+                }
+            }
+            
+            async transferToApp() {
+                const statusDiv = document.getElementById('transferStatus');
+                statusDiv.innerHTML = '<div class="status info">Übertrage Daten an App...</div>';
+                
+                try {
+                    // Aktualisiere lokale Werte
+                    this.boardId = document.getElementById('boardIdInput').value.trim();
+                    this.apiKey = document.getElementById('apiKeyInput').value.trim();
+                    this.boardUrl = document.getElementById('boardUrlInput').value.trim();
+                    
+                    if (!this.boardId) {
+                        throw new Error('Board-ID ist erforderlich!');
+                    }
+                    
+                    // Übertrage an App
+                    const response = await fetch('/api/board-config', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            boardId: this.boardId,
+                            apiKey: this.apiKey,
+                            boardUrl: this.boardUrl
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        statusDiv.innerHTML = `
+                            <div class="status success">
+                                ✅ Daten erfolgreich an App übertragen!<br>
+                                Board-ID: ${this.boardId}<br>
+                                URL: ${this.boardUrl}
+                            </div>
+                        `;
+                        
+                        // Aktualisiere Board-Informationen
+                        this.updateBoardInfo();
+                        
+                        // Benachrichtige Hauptfenster
+                        if (window.opener) {
+                            window.opener.postMessage({
+                                type: 'boardConfigUpdated',
+                                data: {
+                                    boardId: this.boardId,
+                                    apiKey: this.apiKey,
+                                    boardUrl: this.boardUrl
+                                }
+                            }, '*');
+                        }
+                        
+                    } else {
+                        throw new Error('Fehler beim Übertragen an die App');
+                    }
+                } catch (error) {
+                    statusDiv.innerHTML = `<div class="status error">❌ Fehler: ${error.message}</div>`;
+                }
+            }
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            // Zeige Bestätigung
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 1000);
+        }
+        
+        function testConnection() {
+            window.boardSetup.testConnection();
+        }
+        
+        function transferToApp() {
+            window.boardSetup.transferToApp();
+        }
+        
+        // Initialisiere Setup
+        document.addEventListener('DOMContentLoaded', () => {
+            window.boardSetup = new BoardSetup();
+        });
+    </script>
+</body>
+</html>

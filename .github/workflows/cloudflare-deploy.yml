@@ -1,0 +1,77 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Build for Cloudflare
+      run: |
+        echo "🚀 Building for Cloudflare Pages..."
+        
+        # Erstelle Build-Verzeichnis
+        mkdir -p cloudflare-build
+        
+        # Kopiere nur die notwendigen Dateien (ohne große Dateien)
+        cp play-interface.html cloudflare-build/
+        cp index.html cloudflare-build/
+        cp .nojekyll cloudflare-build/
+        cp README.md cloudflare-build/
+        cp wrangler.toml cloudflare-build/
+        
+        # Kopiere assets Verzeichnis
+        cp -r assets cloudflare-build/
+        
+        # Erstelle _redirects für SPA
+        echo "/*    /play-interface.html   200" > cloudflare-build/_redirects
+        
+        # Entferne alle großen Dateien explizit
+        find cloudflare-build -name "*.dll" -delete
+        find cloudflare-build -name "*.exe" -delete
+        find cloudflare-build -name "AutodartsTrainer" -type d -exec rm -rf {} + 2>/dev/null || true
+        find cloudflare-build -name "node_modules" -type d -exec rm -rf {} + 2>/dev/null || true
+        find cloudflare-build -name "Desktop app" -type d -exec rm -rf {} + 2>/dev/null || true
+        
+        # Prüfe Dateigrößen
+        echo "📊 Dateigrößen:"
+        find cloudflare-build -type f -exec ls -lh {} \; | awk '{print $5, $9}' | sort -hr
+        
+        # Prüfe auf Dateien über 25MB
+        LARGE_FILES=$(find cloudflare-build -type f -size +25M 2>/dev/null || true)
+        if [ -n "$LARGE_FILES" ]; then
+          echo "❌ Große Dateien gefunden:"
+          echo "$LARGE_FILES"
+          exit 1
+        fi
+        
+        echo "✅ Build completed!"
+        echo "📁 Build-Inhalt:"
+        ls -la cloudflare-build/
+        
+    - name: Deploy to Cloudflare Pages
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: autodarts-trainer
+        directory: cloudflare-build
+        gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Deployment URL
+      run: |
+        echo "🌐 Deployment URL: https://autodarts-trainer.pages.dev"
+        echo "📱 Play Interface: https://autodarts-trainer.pages.dev/play-interface.html"

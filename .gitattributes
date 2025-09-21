@@ -1,0 +1,29 @@
+# Git LFS (Large File Storage) für große Dateien
+*.dll filter=lfs diff=lfs merge=lfs -text
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.so filter=lfs diff=lfs merge=lfs -text
+*.dylib filter=lfs diff=lfs merge=lfs -text
+*.node filter=lfs diff=lfs merge=lfs -text
+icudtl.dat filter=lfs diff=lfs merge=lfs -text
+app-builder* filter=lfs diff=lfs merge=lfs -text
+
+# Cloudflare Pages - große Dateien komplett ignorieren
+AutodartsTrainer/** -text
+**/AutodartsTrainer/** -text
+OpenCvSharpExtern.dll -text
+
+# Textdateien normal behandeln
+*.js text
+*.html text
+*.css text
+*.json text
+*.md text
+*.txt text
+
+# Binärdateien
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text

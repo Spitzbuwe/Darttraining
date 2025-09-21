@@ -1,0 +1,27 @@
+{
+  "name": "autodarts-trainer",
+  "version": "1.0.0",
+  "description": "Autodarts Trainer mit automatischem Cloudflare Deployment",
+  "main": "auto-deploy.js",
+  "scripts": {
+    "deploy": "node auto-deploy.js --deploy",
+    "watch": "node auto-deploy.js --watch",
+    "build": "node auto-deploy.js --deploy",
+    "dev": "node auto-deploy.js --watch"
+  },
+  "keywords": [
+    "darts",
+    "training",
+    "cloudflare",
+    "deployment",
+    "autodarts"
+  ],
+  "author": "Spitzbuwe",
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

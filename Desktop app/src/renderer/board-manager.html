@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Board Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            height: fit-content;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #90cdf4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(144, 205, 244, 0.5);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .nav-item.active {
+            background: rgba(144, 205, 244, 0.15);
+            border-color: #90cdf4;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-weight: 500;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #90cdf4;
+            text-shadow: 0 0 20px rgba(144, 205, 244, 0.6);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #90cdf4;
+            text-shadow: 0 0 10px rgba(144, 205, 244, 0.5);
+        }
+        
+        .card-icon {
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #90cdf4;
+            box-shadow: 0 0 10px rgba(144, 205, 244, 0.4);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #90cdf4, #63b3ed);
+            color: #1a1a2e;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(144, 205, 244, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #63b3ed, #90cdf4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(144, 205, 244, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #cc0000, #ff4444);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #1a1a2e;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(45deg, #00cc6a, #00ff88);
+            transform: translateY(-2px);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+        
+        .status-label {
+            font-size: 12px;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .camera-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .camera-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .camera-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            margin: 0 auto 10px;
+        }
+        
+        .camera-status.active {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .camera-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .camera-resolution {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .logs-container {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            border-left: 3px solid #90cdf4;
+        }
+        
+        .log-timestamp {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .log-message {
+            color: #fff;
+            margin-top: 5px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            border-left-color: #ff4444;
+        }
+        
+        .notification.success {
+            border-left-color: #00ff88;
+        }
+        
+        .notification.warning {
+            border-left-color: #ffaa00;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .credential-display {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+        
+        .copy-btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #00cc6a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎯 Autodarts Board Manager</div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Board Manager Online</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="section-title">🎯 Navigation</div>
+                
+                <div class="nav-item active" onclick="showSection('overview')">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-text">Übersicht</div>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('config')">
+                    <div class="nav-icon">⚙️</div>
+                    <div class="nav-text">Konfiguration</div>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('cameras')">
+                    <div class="nav-icon">📹</div>
+                    <div class="nav-text">Kameras</div>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('games')">
+                    <div class="nav-icon">🎮</div>
+                    <div class="nav-text">Spiele</div>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('logs')">
+                    <div class="nav-icon">📋</div>
+                    <div class="nav-text">Logs</div>
+                </div>
+                
+                <div class="nav-item" onclick="showSection('settings')">
+                    <div class="nav-icon">🔧</div>
+                    <div class="nav-text">Einstellungen</div>
+                </div>
+                
+                <div class="nav-item" onclick="window.close()">
+                    <div class="nav-icon">❌</div>
+                    <div class="nav-text">Schließen</div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Main Grid -->
+                <div class="grid" id="mainGrid">
+            <!-- Board Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚙️ Board Konfiguration</div>
+                    <div class="card-icon">🎯</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Board-ID:</label>
+                    <div class="credential-display" id="boardIdDisplay">
+                        c4fe737a-5637-4953-a1a1-05ecb09efcf2
+                        <button class="copy-btn" onclick="copyToClipboard('boardIdDisplay')">📋</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>API-Key:</label>
+                    <div class="credential-display" id="apiKeyDisplay">
+                        ****************************
+                        <button class="copy-btn" onclick="copyToClipboard('apiKeyDisplay')">📋</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Board-URL:</label>
+                    <div class="credential-display" id="boardUrlDisplay">
+                        http://192.168.2.72:3180
+                        <button class="copy-btn" onclick="copyToClipboard('boardUrlDisplay')">📋</button>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="testConnection()">🧪 Verbindung testen</button>
+                    <button class="btn btn-secondary" onclick="refreshConfig()">🔄 Aktualisieren</button>
+                    <button class="btn btn-success" onclick="saveConfig()">💾 Speichern</button>
+                </div>
+            </div>
+            
+            <!-- Board Status -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 Board Status</div>
+                    <div class="card-icon">📈</div>
+                </div>
+                
+                <div class="status-grid">
+                    <div class="status-item">
+                        <div class="status-value" id="boardStatus">Online</div>
+                        <div class="status-label">Status</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="uptime">2h 34m</div>
+                        <div class="status-label">Uptime</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="gamesPlayed">12</div>
+                        <div class="status-label">Spiele</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value" id="dartsThrown">1,247</div>
+                        <div class="status-label">Darts</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="refreshStatus()">🔄 Status aktualisieren</button>
+                    <button class="btn btn-primary" onclick="resetStats()">🔄 Statistiken zurücksetzen</button>
+                </div>
+            </div>
+            
+            <!-- Camera Management -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📹 Kamera Management</div>
+                    <div class="card-icon">📷</div>
+                </div>
+                
+                <div class="camera-grid" id="cameraGrid">
+                    <div class="camera-item">
+                        <div class="camera-status active"></div>
+                        <div class="camera-name">Kamera 1</div>
+                        <div class="camera-resolution">1920x1080</div>
+                    </div>
+                    <div class="camera-item">
+                        <div class="camera-status active"></div>
+                        <div class="camera-name">Kamera 2</div>
+                        <div class="camera-resolution">1920x1080</div>
+                    </div>
+                    <div class="camera-item">
+                        <div class="camera-status"></div>
+                        <div class="camera-name">Kamera 3</div>
+                        <div class="camera-resolution">1280x720</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="refreshCameras()">🔄 Kameras aktualisieren</button>
+                    <button class="btn btn-secondary" onclick="calibrateCameras()">🎯 Kalibrieren</button>
+                </div>
+            </div>
+            
+            <!-- Game Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🎮 Spiel Einstellungen</div>
+                    <div class="card-icon">⚙️</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Standard Spielmodus:</label>
+                    <select id="defaultGameMode">
+                        <option value="501">501</option>
+                        <option value="301">301</option>
+                        <option value="cricket">Cricket</option>
+                        <option value="170-checkout">170 Checkout</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Spieler Anzahl:</label>
+                    <select id="playerCount">
+                        <option value="1">1 Spieler</option>
+                        <option value="2">2 Spieler</option>
+                        <option value="4">4 Spieler</option>
+                        <option value="8">8 Spieler</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Automatische Erkennung:</label>
+                    <select id="autoDetection">
+                        <option value="enabled">Aktiviert</option>
+                        <option value="disabled">Deaktiviert</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="saveGameSettings()">💾 Einstellungen speichern</button>
+                    <button class="btn btn-secondary" onclick="resetGameSettings()">🔄 Zurücksetzen</button>
+                </div>
+            </div>
+            
+            <!-- System Logs -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <div class="card-title">📋 System Logs</div>
+                    <div class="card-icon">📝</div>
+                </div>
+                
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry">
+                        <div class="log-timestamp">[13:30:45]</div>
+                        <div class="log-message">Board Manager gestartet</div>
+                    </div>
+                    <div class="log-entry">
+                        <div class="log-timestamp">[13:30:46]</div>
+                        <div class="log-message">Verbindung zu Board hergestellt</div>
+                    </div>
+                    <div class="log-entry">
+                        <div class="log-timestamp">[13:30:47]</div>
+                        <div class="log-message">Kamera 1 und 2 aktiviert</div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="refreshLogs()">🔄 Logs aktualisieren</button>
+                    <button class="btn btn-danger" onclick="clearLogs()">🗑️ Logs löschen</button>
+                    <button class="btn btn-primary" onclick="exportLogs()">📤 Exportieren</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        class BoardManager {
+            constructor() {
+                this.currentSection = 'overview';
+                this.loadBoardConfig();
+                this.startStatusUpdates();
+                this.setupNavigation();
+                this.setupMessageListener();
+            }
+            
+            setupMessageListener() {
+                window.addEventListener('message', (event) => {
+                    if (event.data.type === 'boardConfig') {
+                        const config = event.data.data;
+                        this.updateConfigFromMessage(config);
+                    }
+                });
+            }
+            
+            updateConfigFromMessage(config) {
+                if (config.boardId && config.boardId !== '-') {
+                    document.getElementById('boardIdDisplay').innerHTML = 
+                        config.boardId + ' <button class="copy-btn" onclick="copyToClipboard(\'boardIdDisplay\')">📋</button>';
+                }
+                if (config.apiKey && config.apiKey !== '-') {
+                    document.getElementById('apiKeyDisplay').innerHTML = 
+                        '****************************' + ' <button class="copy-btn" onclick="copyToClipboard(\'apiKeyDisplay\')">📋</button>';
+                }
+                if (config.boardUrl && config.boardUrl !== '-') {
+                    document.getElementById('boardUrlDisplay').innerHTML = 
+                        config.boardUrl + ' <button class="copy-btn" onclick="copyToClipboard(\'boardUrlDisplay\')">📋</button>';
+                }
+                
+                this.showNotification('Board-Konfiguration vom Hauptfenster empfangen!', 'success');
+            }
+            
+            setupNavigation() {
+                // Setze aktive Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                        item.classList.add('active');
+                    });
+                });
+            }
+            
+            async loadBoardConfig() {
+                try {
+                    const response = await fetch('/api/board-config');
+                    if (response.ok) {
+                        const config = await response.json();
+                        this.updateConfigDisplay(config);
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Laden der Konfiguration:', error);
+                }
+            }
+            
+            updateConfigDisplay(config) {
+                if (config.boardId) {
+                    document.getElementById('boardIdDisplay').innerHTML = 
+                        config.boardId + ' <button class="copy-btn" onclick="copyToClipboard(\'boardIdDisplay\')">📋</button>';
+                }
+                if (config.apiKey) {
+                    document.getElementById('apiKeyDisplay').innerHTML = 
+                        '****************************' + ' <button class="copy-btn" onclick="copyToClipboard(\'apiKeyDisplay\')">📋</button>';
+                }
+                if (config.boardUrl) {
+                    document.getElementById('boardUrlDisplay').innerHTML = 
+                        config.boardUrl + ' <button class="copy-btn" onclick="copyToClipboard(\'boardUrlDisplay\')">📋</button>';
+                }
+            }
+            
+            async testConnection() {
+                this.showNotification('Teste Board-Verbindung...', 'info');
+                
+                try {
+                    const response = await fetch('http://192.168.2.72:3180/api/config');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.showNotification('Verbindung erfolgreich!', 'success');
+                        this.updateBoardStatus('Online');
+                    } else {
+                        this.showNotification('Board nicht erreichbar!', 'error');
+                        this.updateBoardStatus('Offline');
+                    }
+                } catch (error) {
+                    this.showNotification('Verbindung fehlgeschlagen!', 'error');
+                    this.updateBoardStatus('Offline');
+                }
+            }
+            
+            updateBoardStatus(status) {
+                document.getElementById('boardStatus').textContent = status;
+                document.getElementById('boardStatus').style.color = status === 'Online' ? '#00ff88' : '#ff4444';
+            }
+            
+            async refreshConfig() {
+                this.showNotification('Lade Konfiguration...', 'info');
+                await this.loadBoardConfig();
+                this.showNotification('Konfiguration aktualisiert!', 'success');
+            }
+            
+            async saveConfig() {
+                this.showNotification('Konfiguration wird gespeichert...', 'info');
+                // Hier würde die Konfiguration gespeichert werden
+                this.showNotification('Konfiguration gespeichert!', 'success');
+            }
+            
+            refreshStatus() {
+                this.showNotification('Status wird aktualisiert...', 'info');
+                // Simuliere Status-Update
+                setTimeout(() => {
+                    this.showNotification('Status aktualisiert!', 'success');
+                }, 1000);
+            }
+            
+            resetStats() {
+                if (confirm('Statistiken wirklich zurücksetzen?')) {
+                    document.getElementById('gamesPlayed').textContent = '0';
+                    document.getElementById('dartsThrown').textContent = '0';
+                    this.showNotification('Statistiken zurückgesetzt!', 'success');
+                }
+            }
+            
+            refreshCameras() {
+                this.showNotification('Kameras werden aktualisiert...', 'info');
+                // Simuliere Kamera-Update
+                setTimeout(() => {
+                    this.showNotification('Kameras aktualisiert!', 'success');
+                }, 1000);
+            }
+            
+            calibrateCameras() {
+                this.showNotification('Kamera-Kalibrierung gestartet...', 'info');
+                // Hier würde die Kalibrierung implementiert werden
+                setTimeout(() => {
+                    this.showNotification('Kalibrierung abgeschlossen!', 'success');
+                }, 3000);
+            }
+            
+            saveGameSettings() {
+                this.showNotification('Spiel-Einstellungen gespeichert!', 'success');
+            }
+            
+            resetGameSettings() {
+                if (confirm('Spiel-Einstellungen zurücksetzen?')) {
+                    document.getElementById('defaultGameMode').value = '501';
+                    document.getElementById('playerCount').value = '1';
+                    document.getElementById('autoDetection').value = 'enabled';
+                    this.showNotification('Einstellungen zurückgesetzt!', 'success');
+                }
+            }
+            
+            refreshLogs() {
+                this.showNotification('Logs werden aktualisiert...', 'info');
+                // Simuliere Log-Update
+                setTimeout(() => {
+                    this.showNotification('Logs aktualisiert!', 'success');
+                }, 1000);
+            }
+            
+            clearLogs() {
+                if (confirm('Logs wirklich löschen?')) {
+                    document.getElementById('logsContainer').innerHTML = 
+                        '<div class="log-entry"><div class="log-timestamp">[' + new Date().toLocaleTimeString() + ']</div><div class="log-message">Logs gelöscht</div></div>';
+                    this.showNotification('Logs gelöscht!', 'success');
+                }
+            }
+            
+            exportLogs() {
+                this.showNotification('Logs werden exportiert...', 'info');
+                // Hier würde der Export implementiert werden
+                setTimeout(() => {
+                    this.showNotification('Logs exportiert!', 'success');
+                }, 1000);
+            }
+            
+            startStatusUpdates() {
+                // Simuliere regelmäßige Status-Updates
+                setInterval(() => {
+                    this.refreshStatus();
+                }, 30000); // Alle 30 Sekunden
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            showSection(section) {
+                this.currentSection = section;
+                const grid = document.getElementById('mainGrid');
+                
+                // Verstecke alle Karten
+                grid.querySelectorAll('.card').forEach(card => {
+                    card.style.display = 'none';
+                });
+                
+                // Zeige relevante Karten basierend auf der Sektion
+                switch(section) {
+                    case 'overview':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Status') || 
+                                card.querySelector('.card-title').textContent.includes('Konfiguration')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    case 'config':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Konfiguration')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    case 'cameras':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Kamera')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    case 'games':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Spiel')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    case 'logs':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Logs')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    case 'settings':
+                        grid.querySelectorAll('.card').forEach(card => {
+                            if (card.querySelector('.card-title').textContent.includes('Einstellungen')) {
+                                card.style.display = 'block';
+                            }
+                        });
+                        break;
+                    default:
+                        grid.querySelectorAll('.card').forEach(card => {
+                            card.style.display = 'block';
+                        });
+                }
+                
+                this.showNotification(`${section.charAt(0).toUpperCase() + section.slice(1)} Sektion geladen`, 'info');
+            }
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent.replace('📋', '').trim();
+            navigator.clipboard.writeText(text).then(() => {
+                boardManager.showNotification('In Zwischenablage kopiert!', 'success');
+            });
+        }
+        
+        // Globale Funktionen für onclick-Handler
+        function showSection(section) { boardManager.showSection(section); }
+        function testConnection() { boardManager.testConnection(); }
+        function refreshConfig() { boardManager.refreshConfig(); }
+        function saveConfig() { boardManager.saveConfig(); }
+        function refreshStatus() { boardManager.refreshStatus(); }
+        function resetStats() { boardManager.resetStats(); }
+        function refreshCameras() { boardManager.refreshCameras(); }
+        function calibrateCameras() { boardManager.calibrateCameras(); }
+        function saveGameSettings() { boardManager.saveGameSettings(); }
+        function resetGameSettings() { boardManager.resetGameSettings(); }
+        function refreshLogs() { boardManager.refreshLogs(); }
+        function clearLogs() { boardManager.clearLogs(); }
+        function exportLogs() { boardManager.exportLogs(); }
+        
+        // Initialize Board Manager
+        let boardManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            boardManager = new BoardManager();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Spiel-Modi</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-mode {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-mode:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #4CAF50;
+        }
+
+        .game-mode h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+            color: #FFD700;
+        }
+
+        .game-mode p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .game-mode .rules {
+            font-size: 0.9em;
+            color: #E0E0E0;
+            margin-top: 15px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #FF9800, #F57C00);
+        }
+
+        .status-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .status-indicator {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+
+        .connected { color: #4CAF50; }
+        .disconnected { color: #f44336; }
+
+        .selected-mode {
+            border-color: #4CAF50 !important;
+            background: rgba(76, 175, 80, 0.2) !important;
+        }
+
+        .game-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .game-info.active {
+            display: block;
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .score-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .score-input input {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100px;
+            text-align: center;
+        }
+
+        .score-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .score-btn {
+            padding: 10px;
+            font-size: 14px;
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Autodarts Spiel-Modi</h1>
+
+        <div class="status-display">
+            <div class="status-indicator" id="status-indicator">❌</div>
+            <p id="status-text">Verbindung wird geprüft...</p>
+        </div>
+
+        <div class="game-modes">
+            <div class="game-mode" onclick="selectMode('501')">
+                <h3>🎯 501</h3>
+                <p><strong>Klassisches Darts-Spiel</strong></p>
+                <div class="rules">
+                    • Starte mit 501 Punkten<br>
+                    • Ziehe deine Scores ab<br>
+                    • Gewinne mit exakt 0<br>
+                    • Letzter Wurf muss Doppel sein
+                </div>
+            </div>
+
+            <div class="game-mode" onclick="selectMode('cricket')">
+                <h3>🦗 Cricket</h3>
+                <p><strong>Zahlen 15-20 + Bull</strong></p>
+                <div class="rules">
+                    • Zahlen 15, 16, 17, 18, 19, 20<br>
+                    • Jede Zahl 3x treffen<br>
+                    • Bull (25) 3x treffen<br>
+                    • Wer zuerst fertig ist, gewinnt
+                </div>
+            </div>
+
+            <div class="game-mode" onclick="selectMode('around')">
+                <h3>🕐 Around the Clock</h3>
+                <p><strong>1-20 in Reihenfolge</strong></p>
+                <div class="rules">
+                    • Treffe 1, dann 2, dann 3...<br>
+                    • Bis 20 in Reihenfolge<br>
+                    • Jede Zahl nur einmal<br>
+                    • Wer zuerst bei 20 ist, gewinnt
+                </div>
+            </div>
+
+            <div class="game-mode" onclick="selectMode('highscore')">
+                <h3>🏆 High Score</h3>
+                <p><strong>Höchste Punktzahl</strong></p>
+                <div class="rules">
+                    • 10 Würfe<br>
+                    • Sammle so viele Punkte wie möglich<br>
+                    • 180 = Maximum pro Wurf<br>
+                    • Wer hat die höchste Gesamtpunktzahl?
+                </div>
+            </div>
+
+            <div class="game-mode" onclick="selectMode('killer')">
+                <h3>💀 Killer</h3>
+                <p><strong>Elimination Game</strong></p>
+                <div class="rules">
+                    • Jeder wählt eine Zahl (1-20)<br>
+                    • Treffe deine Zahl 3x<br>
+                    • Dann kannst du andere "killen"<br>
+                    • Letzter überlebende gewinnt
+                </div>
+            </div>
+
+            <div class="game-mode" onclick="selectMode('custom')">
+                <h3>⚙️ Eigenes Spiel</h3>
+                <p><strong>Deine eigenen Regeln</strong></p>
+                <div class="rules">
+                    • Erstelle dein eigenes Spiel<br>
+                    • Definiere deine Regeln<br>
+                    • Spiele wie du willst<br>
+                    • Unendliche Möglichkeiten
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="back-btn" onclick="goBack()">← Zurück</button>
+            <button class="start-btn" id="start-game-btn" onclick="startGame()" disabled>Spiel starten</button>
+        </div>
+
+        <div class="game-info" id="game-info">
+            <h3 id="game-title">Spiel auswählen</h3>
+            <div class="score-display" id="current-score">0</div>
+            <p id="game-status">Wähle einen Spiel-Modus aus</p>
+            
+            <div class="score-input">
+                <label for="manual-score">Manueller Score:</label>
+                <input type="number" id="manual-score" placeholder="z.B. 20" min="0" max="180">
+                <button onclick="sendManualScore()">Senden</button>
+            </div>
+
+            <div class="score-buttons">
+                <button class="score-btn" onclick="sendQuickScore(20)">20</button>
+                <button class="score-btn" onclick="sendQuickScore(25)">25</button>
+                <button class="score-btn" onclick="sendQuickScore(30)">30</button>
+                <button class="score-btn" onclick="sendQuickScore(40)">40</button>
+                <button class="score-btn" onclick="sendQuickScore(50)">50</button>
+                <button class="score-btn" onclick="sendQuickScore(60)">60</button>
+                <button class="score-btn" onclick="sendQuickScore(100)">100</button>
+                <button class="score-btn" onclick="sendQuickScore(120)">120</button>
+                <button class="score-btn" onclick="sendQuickScore(180)">180</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BRIDGE_URL = 'http://localhost:8766';
+        let selectedMode = null;
+        let gameActive = false;
+
+        // DOM Elemente
+        const statusIndicator = document.getElementById('status-indicator');
+        const statusText = document.getElementById('status-text');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const gameInfo = document.getElementById('game-info');
+        const gameTitle = document.getElementById('game-title');
+        const currentScore = document.getElementById('current-score');
+        const gameStatus = document.getElementById('game-status');
+
+        // Initiale Statusprüfung
+        checkStatus();
+
+        function checkStatus() {
+            fetch(`${BRIDGE_URL}/status`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.desktop_connected) {
+                        statusIndicator.textContent = '✅';
+                        statusIndicator.className = 'status-indicator connected';
+                        statusText.textContent = 'Verbunden - Bereit zum Spielen!';
+                    } else {
+                        statusIndicator.textContent = '❌';
+                        statusIndicator.className = 'status-indicator disconnected';
+                        statusText.textContent = 'Nicht verbunden - Bitte Bridge starten';
+                    }
+                })
+                .catch(error => {
+                    statusIndicator.textContent = '❌';
+                    statusIndicator.className = 'status-indicator disconnected';
+                    statusText.textContent = 'Verbindungsfehler';
+                });
+        }
+
+        function selectMode(mode) {
+            // Entferne vorherige Auswahl
+            document.querySelectorAll('.game-mode').forEach(el => {
+                el.classList.remove('selected-mode');
+            });
+
+            // Markiere ausgewählten Modus
+            event.currentTarget.classList.add('selected-mode');
+            selectedMode = mode;
+
+            // Aktiviere Start-Button
+            startGameBtn.disabled = false;
+
+            // Zeige Spiel-Info
+            gameInfo.classList.add('active');
+            gameTitle.textContent = getGameTitle(mode);
+            gameStatus.textContent = getGameDescription(mode);
+        }
+
+        function getGameTitle(mode) {
+            const titles = {
+                '501': '🎯 501 - Klassisches Darts',
+                'cricket': '🦗 Cricket - Zahlen 15-20',
+                'around': '🕐 Around the Clock',
+                'highscore': '🏆 High Score Challenge',
+                'killer': '💀 Killer - Elimination',
+                'custom': '⚙️ Eigenes Spiel'
+            };
+            return titles[mode] || 'Unbekanntes Spiel';
+        }
+
+        function getGameDescription(mode) {
+            const descriptions = {
+                '501': 'Starte mit 501 Punkten. Ziehe deine Scores ab. Gewinne mit exakt 0!',
+                'cricket': 'Treffe die Zahlen 15-20 und Bull je 3x. Wer zuerst fertig ist, gewinnt!',
+                'around': 'Treffe 1, dann 2, dann 3... bis 20 in Reihenfolge!',
+                'highscore': '10 Würfe. Sammle so viele Punkte wie möglich!',
+                'killer': 'Wähle eine Zahl. Treffe sie 3x, dann kannst du andere eliminieren!',
+                'custom': 'Erstelle dein eigenes Spiel mit deinen Regeln!'
+            };
+            return descriptions[mode] || 'Wähle einen Spiel-Modus aus';
+        }
+
+        function startGame() {
+            if (!selectedMode) return;
+
+            gameActive = true;
+            startGameBtn.textContent = 'Spiel läuft...';
+            startGameBtn.disabled = true;
+
+            // Starte Auto-Score
+            fetch(`${BRIDGE_URL}/start_auto_score`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    gameStatus.textContent = `${getGameTitle(selectedMode)} gestartet! Scores werden automatisch erkannt.`;
+                    startScorePolling();
+                }
+            })
+            .catch(error => {
+                gameStatus.textContent = 'Fehler beim Starten des Spiels';
+            });
+        }
+
+        function startScorePolling() {
+            setInterval(() => {
+                if (!gameActive) return;
+
+                fetch(`${BRIDGE_URL}/score`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.score > 0) {
+                            currentScore.textContent = data.score;
+                            updateGameStatus(data.score);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Score polling error:', error);
+                    });
+            }, 1000);
+        }
+
+        function updateGameStatus(score) {
+            // Hier kannst du die Spiel-Logik für jeden Modus implementieren
+            switch(selectedMode) {
+                case '501':
+                    gameStatus.textContent = `Score: ${score} - Ziehe von 501 ab`;
+                    break;
+                case 'cricket':
+                    gameStatus.textContent = `Score: ${score} - Treffe Zahlen 15-20`;
+                    break;
+                case 'around':
+                    gameStatus.textContent = `Score: ${score} - Treffe 1-20 in Reihenfolge`;
+                    break;
+                case 'highscore':
+                    gameStatus.textContent = `Score: ${score} - Sammle Punkte!`;
+                    break;
+                case 'killer':
+                    gameStatus.textContent = `Score: ${score} - Wähle deine Zahl`;
+                    break;
+                case 'custom':
+                    gameStatus.textContent = `Score: ${score} - Deine Regeln`;
+                    break;
+            }
+        }
+
+        function sendManualScore() {
+            const score = parseInt(document.getElementById('manual-score').value);
+            if (isNaN(score) || score < 0 || score > 180) {
+                alert('Ungültiger Score. Bitte eine Zahl zwischen 0 und 180 eingeben.');
+                return;
+            }
+            sendScore(score);
+        }
+
+        function sendQuickScore(score) {
+            sendScore(score);
+        }
+
+        function sendScore(score) {
+            fetch(`${BRIDGE_URL}/test_score`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ score: score })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentScore.textContent = score;
+                    updateGameStatus(score);
+                }
+            })
+            .catch(error => {
+                console.error('Score send error:', error);
+            });
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Auto-Refresh Status alle 5 Sekunden
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+</html>

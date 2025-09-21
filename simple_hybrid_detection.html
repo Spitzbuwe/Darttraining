@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Hybrid Score Detection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .status-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .status-indicator {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        
+        .connected { color: #4CAF50; }
+        .disconnected { color: #f44336; }
+        .warning { color: #ff9800; }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stop-btn {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+        
+        .test-btn {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+        
+        .score-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .current-score {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        }
+        
+        .score-log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .score-log h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .log-entry {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .log-entry.error {
+            border-left-color: #f44336;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ff9800;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #FFD700;
+        }
+        
+        .instructions ol {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .score-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .score-input input {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100px;
+            text-align: center;
+        }
+        
+        .score-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .score-btn {
+            padding: 10px;
+            font-size: 14px;
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Simple Hybrid Score Detection</h1>
+        
+        <div class="instructions">
+            <h3>📋 Anleitung für echte Kamera-basierte Score-Erkennung</h3>
+            <ol>
+                <li><strong>Autodarts Desktop App starten</strong> - Diese ist für die Kamera-Erkennung zuständig</li>
+                <li><strong>In der Desktop App einloggen</strong> - Wichtig für die Score-Erkennung</li>
+                <li><strong>Kamera kalibrieren</strong> - In der Desktop App die Kamera für die Dartscheibe einrichten</li>
+                <li><strong>play.autodarts.io im Browser öffnen</strong> - Für das Spiel</li>
+                <li><strong>Auto-Score aktivieren</strong> - Startet die automatische Score-Erkennung</li>
+            </ol>
+        </div>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>🖥️ Desktop App</h3>
+                <div class="status-indicator" id="desktop-status">❌</div>
+                <p id="desktop-text">Nicht verbunden</p>
+            </div>
+            
+            <div class="status-card">
+                <h3>🎯 Auto-Score</h3>
+                <div class="status-indicator" id="auto-score-status">⏹️</div>
+                <p id="auto-score-text">Gestoppt</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="check-status-btn">Status prüfen</button>
+            <button id="start-auto-score-btn">Auto-Score starten</button>
+            <button id="stop-auto-score-btn" class="stop-btn" disabled>Auto-Score stoppen</button>
+            <button id="test-score-btn" class="test-btn">Test Score senden</button>
+        </div>
+        
+        <div class="score-display">
+            <h3>Aktueller Score</h3>
+            <div class="current-score" id="current-score">0</div>
+            <p id="score-source">Quelle: Keine</p>
+        </div>
+        
+        <div class="score-input">
+            <label for="manual-score">Manueller Score:</label>
+            <input type="number" id="manual-score" placeholder="z.B. 20" min="0" max="180">
+            <button id="send-manual-score-btn" class="test-btn">Senden</button>
+        </div>
+        
+        <div class="score-buttons">
+            <button class="score-btn" onclick="sendQuickScore(20)">20</button>
+            <button class="score-btn" onclick="sendQuickScore(25)">25</button>
+            <button class="score-btn" onclick="sendQuickScore(30)">30</button>
+            <button class="score-btn" onclick="sendQuickScore(40)">40</button>
+            <button class="score-btn" onclick="sendQuickScore(50)">50</button>
+            <button class="score-btn" onclick="sendQuickScore(60)">60</button>
+            <button class="score-btn" onclick="sendQuickScore(100)">100</button>
+            <button class="score-btn" onclick="sendQuickScore(120)">120</button>
+            <button class="score-btn" onclick="sendQuickScore(180)">180</button>
+        </div>
+        
+        <div class="score-log">
+            <h3>📝 Score-Log</h3>
+            <div id="score-log-content">
+                <div class="log-entry">Score-Log wird hier angezeigt...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BRIDGE_URL = 'http://localhost:8766';
+        let autoScoreActive = false;
+        let scorePollingInterval = null;
+        
+        // DOM Elemente
+        const statusBtn = document.getElementById('check-status-btn');
+        const startBtn = document.getElementById('start-auto-score-btn');
+        const stopBtn = document.getElementById('stop-auto-score-btn');
+        const testBtn = document.getElementById('test-score-btn');
+        const manualScoreBtn = document.getElementById('send-manual-score-btn');
+        const currentScoreEl = document.getElementById('current-score');
+        const scoreSourceEl = document.getElementById('score-source');
+        const logContent = document.getElementById('score-log-content');
+        
+        // Status Elemente
+        const desktopStatus = document.getElementById('desktop-status');
+        const desktopText = document.getElementById('desktop-text');
+        const autoScoreStatus = document.getElementById('auto-score-status');
+        const autoScoreText = document.getElementById('auto-score-text');
+        
+        // Event Listeners
+        statusBtn.addEventListener('click', checkStatus);
+        startBtn.addEventListener('click', startAutoScore);
+        stopBtn.addEventListener('click', stopAutoScore);
+        testBtn.addEventListener('click', sendTestScore);
+        manualScoreBtn.addEventListener('click', sendManualScore);
+        
+        // Initiale Statusprüfung
+        checkStatus();
+        
+        function addLogEntry(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            logContent.insertBefore(logEntry, logContent.firstChild);
+            
+            // Begrenze Log-Einträge
+            while (logContent.children.length > 50) {
+                logContent.removeChild(logContent.lastChild);
+            }
+        }
+        
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${BRIDGE_URL}/status`);
+                const data = await response.json();
+                
+                // Desktop App Status
+                if (data.desktop_connected) {
+                    desktopStatus.textContent = '✅';
+                    desktopStatus.className = 'status-indicator connected';
+                    desktopText.textContent = 'Verbunden';
+                } else {
+                    desktopStatus.textContent = '❌';
+                    desktopStatus.className = 'status-indicator disconnected';
+                    desktopText.textContent = 'Nicht verbunden';
+                }
+                
+                // Auto-Score Status
+                if (data.auto_score_active) {
+                    autoScoreStatus.textContent = '▶️';
+                    autoScoreStatus.className = 'status-indicator connected';
+                    autoScoreText.textContent = 'Aktiv';
+                } else {
+                    autoScoreStatus.textContent = '⏹️';
+                    autoScoreStatus.className = 'status-indicator disconnected';
+                    autoScoreText.textContent = 'Gestoppt';
+                }
+                
+                // Aktueller Score
+                currentScoreEl.textContent = data.last_score || 0;
+                scoreSourceEl.textContent = `Quelle: ${data.desktop_connected ? 'Desktop App' : 'Generator'}`;
+                
+                addLogEntry(`Status geprüft: Desktop ${data.desktop_connected ? '✅' : '❌'}`);
+                
+            } catch (error) {
+                addLogEntry(`Fehler beim Status prüfen: ${error.message}`, 'error');
+            }
+        }
+        
+        async function startAutoScore() {
+            try {
+                const response = await fetch(`${BRIDGE_URL}/start_auto_score`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    autoScoreActive = true;
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    
+                    // Starte Score-Polling
+                    startScorePolling();
+                    
+                    addLogEntry('Auto-Score gestartet');
+                } else {
+                    addLogEntry('Fehler beim Starten des Auto-Scores', 'error');
+                }
+                
+            } catch (error) {
+                addLogEntry(`Fehler beim Starten: ${error.message}`, 'error');
+            }
+        }
+        
+        async function stopAutoScore() {
+            try {
+                const response = await fetch(`${BRIDGE_URL}/stop_auto_score`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    autoScoreActive = false;
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    
+                    // Stoppe Score-Polling
+                    stopScorePolling();
+                    
+                    addLogEntry('Auto-Score gestoppt');
+                } else {
+                    addLogEntry('Fehler beim Stoppen des Auto-Scores', 'error');
+                }
+                
+            } catch (error) {
+                addLogEntry(`Fehler beim Stoppen: ${error.message}`, 'error');
+            }
+        }
+        
+        function startScorePolling() {
+            if (scorePollingInterval) return;
+            
+            scorePollingInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${BRIDGE_URL}/score`);
+                    const data = await response.json();
+                    
+                    if (data.success && data.score > 0) {
+                        currentScoreEl.textContent = data.score;
+                        scoreSourceEl.textContent = `Quelle: ${data.source}`;
+                        addLogEntry(`Score empfangen: ${data.score} (Quelle: ${data.source})`);
+                    }
+                } catch (error) {
+                    addLogEntry(`Fehler beim Score abrufen: ${error.message}`, 'error');
+                }
+            }, 1000);
+        }
+        
+        function stopScorePolling() {
+            if (scorePollingInterval) {
+                clearInterval(scorePollingInterval);
+                scorePollingInterval = null;
+            }
+        }
+        
+        async function sendTestScore() {
+            const testScore = 180;
+            await sendScore(testScore);
+        }
+        
+        async function sendManualScore() {
+            const score = parseInt(document.getElementById('manual-score').value);
+            if (isNaN(score) || score < 0 || score > 180) {
+                addLogEntry('Ungültiger Score. Bitte eine Zahl zwischen 0 und 180 eingeben.', 'warning');
+                return;
+            }
+            await sendScore(score);
+        }
+        
+        async function sendQuickScore(score) {
+            await sendScore(score);
+        }
+        
+        async function sendScore(score) {
+            try {
+                const response = await fetch(`${BRIDGE_URL}/test_score`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ score: score })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentScoreEl.textContent = score;
+                    scoreSourceEl.textContent = 'Quelle: Test';
+                    addLogEntry(`Test-Score ${score} gesendet`);
+                } else {
+                    addLogEntry('Fehler beim Senden des Scores', 'error');
+                }
+                
+            } catch (error) {
+                addLogEntry(`Fehler beim Senden: ${error.message}`, 'error');
+            }
+        }
+        
+        // Auto-Refresh alle 5 Sekunden
+        setInterval(checkStatus, 5000);
+        
+        addLogEntry('Simple Hybrid Score Detection geladen');
+    </script>
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Trainer Desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .desktop-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff88;
+        }
+        
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .score-display {
+            font-size: 120px;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            margin-bottom: 30px;
+        }
+        
+        .game-mode {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .dartboard {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #000 0%, #000 20%, #fff 20%, #fff 25%, #000 25%, #000 45%, #fff 45%, #fff 50%, #000 50%);
+            border-radius: 50%;
+            margin: 20px 0;
+            position: relative;
+            border: 8px solid #333;
+        }
+        
+        .dartboard::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 71, 87, 0.3);
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #00ff88;
+        }
+        
+        .game-mode-list {
+            list-style: none;
+        }
+        
+        .game-mode-item {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .game-mode-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-left-color: #00ff88;
+        }
+        
+        .game-mode-item.active {
+            background: rgba(0, 255, 136, 0.2);
+            border-left-color: #00ff88;
+        }
+        
+        .game-mode-name {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .game-mode-desc {
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .camera-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .camera-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+        
+        .camera-indicator.active {
+            background: #00ff88;
+        }
+        
+        .statistics {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            color: #ccc;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-info {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .footer-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop-container">
+        <!-- Hauptbereich -->
+        <div class="main-panel">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo">🎯 Autodarts Trainer Desktop</div>
+                <div class="status">
+                    <div class="status-item">
+                        <div class="status-dot" id="gameStatus"></div>
+                        <span id="gameStatusText">Bereit</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="cameraStatus"></div>
+                        <span id="cameraStatusText">Kamera</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="serverStatus"></div>
+                        <span id="serverStatusText">Server</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spielbereich -->
+            <div class="game-area">
+                <div class="score-display" id="currentScore">170</div>
+                <div class="game-mode" id="currentGameMode">Wählen Sie einen Spielmodus</div>
+                
+                <div class="dartboard"></div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" id="startGameBtn">Spiel starten</button>
+                    <button class="btn btn-secondary" id="stopGameBtn" disabled>Spiel beenden</button>
+                    <button class="btn btn-danger" id="resetGameBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Spielmodi -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">🎮 Spielmodi</div>
+                <ul class="game-mode-list" id="gameModeList">
+                    <li class="game-mode-item" data-mode="170-checkout-p5">
+                        <div class="game-mode-name">170 Checkout (P5)</div>
+                        <div class="game-mode-desc">Fester Start bei 170, Double-Out</div>
+                    </li>
+                    <li class="game-mode-item" data-mode="123-leiter-p4">
+                        <div class="game-mode-name">123-Leiter (P4)</div>
+                        <div class="game-mode-desc">Start bei 123, progressive</div>
+                    </li>
+                    <li class="game-mode-item" data-mode="target-focus-programm1">
+                        <div class="game-mode-name">Target Focus (P1)</div>
+                        <div class="game-mode-desc">30 Darts auf Sektor</div>
+                    </li>
+                    <li class="game-mode-item" data-mode="double-finish-programm2">
+                        <div class="game-mode-name">Double Finish (P2)</div>
+                        <div class="game-mode-desc">Wählbare Doppelziele</div>
+                    </li>
+                    <li class="game-mode-item" data-mode="53-checkout-programm3">
+                        <div class="game-mode-name">53 Checkout (P3)</div>
+                        <div class="game-mode-desc">Start bei 53, Bust-Reset</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Kamera-Status -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">📹 Kameras</div>
+                <div class="camera-status">
+                    <div class="camera-indicator" id="camera1"></div>
+                    <span>Kamera 1</span>
+                </div>
+                <div class="camera-status">
+                    <div class="camera-indicator" id="camera2"></div>
+                    <span>Kamera 2</span>
+                </div>
+                <div class="camera-status">
+                    <div class="camera-indicator" id="camera3"></div>
+                    <span>Kamera 3</span>
+                </div>
+            </div>
+            
+            <!-- Statistiken -->
+            <div class="sidebar-section">
+                <div class="sidebar-title">📊 Statistiken</div>
+                <div class="statistics">
+                    <div class="stat-item">
+                        <span class="stat-label">Spiele gespielt:</span>
+                        <span class="stat-value" id="gamesPlayed">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Darts geworfen:</span>
+                        <span class="stat-value" id="totalDarts">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Checkouts:</span>
+                        <span class="stat-value" id="checkouts">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Durchschnitt:</span>
+                        <span class="stat-value" id="average">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-info">
+            <span>Version 1.0.0</span>
+            <span>|</span>
+            <span>Browser: <a href="http://localhost:3000" target="_blank" style="color: #00ff88;">http://localhost:3000</a></span>
+        </div>
+        <div class="footer-actions">
+            <button class="btn btn-secondary btn-small" id="openBrowserBtn">Browser öffnen</button>
+            <button class="btn btn-secondary btn-small" id="settingsBtn">Einstellungen</button>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        class DesktopApp {
+            constructor() {
+                this.gameState = {
+                    currentMode: null,
+                    currentScore: 0,
+                    isPlaying: false,
+                    cameras: [],
+                    statistics: {}
+                };
+                
+                this.init();
+            }
+            
+            async init() {
+                this.setupEventListeners();
+                await this.loadGameState();
+                this.updateUI();
+                this.startStatusUpdates();
+            }
+            
+            setupEventListeners() {
+                // Spielmodus auswählen
+                document.querySelectorAll('.game-mode-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const modeId = item.dataset.mode;
+                        this.selectGameMode(modeId);
+                    });
+                });
+                
+                // Spiel-Buttons
+                document.getElementById('startGameBtn').addEventListener('click', () => {
+                    this.startGame();
+                });
+                
+                document.getElementById('stopGameBtn').addEventListener('click', () => {
+                    this.stopGame();
+                });
+                
+                document.getElementById('resetGameBtn').addEventListener('click', () => {
+                    this.resetGame();
+                });
+                
+                // Footer-Buttons
+                document.getElementById('openBrowserBtn').addEventListener('click', () => {
+                    this.openBrowser();
+                });
+                
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    this.openSettings();
+                });
+            }
+            
+            async loadGameState() {
+                try {
+                    this.gameState = await ipcRenderer.invoke('get-game-state');
+                } catch (error) {
+                    console.error('Fehler beim Laden des Spielzustands:', error);
+                }
+            }
+            
+            selectGameMode(modeId) {
+                // Entferne aktive Klasse von allen Modis
+                document.querySelectorAll('.game-mode-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Setze aktive Klasse für gewählten Modus
+                document.querySelector(`[data-mode="${modeId}"]`).classList.add('active');
+                
+                this.gameState.currentMode = modeId;
+                this.updateUI();
+            }
+            
+            async startGame() {
+                if (!this.gameState.currentMode) {
+                    alert('Bitte wählen Sie zuerst einen Spielmodus aus!');
+                    return;
+                }
+                
+                try {
+                    this.gameState = await ipcRenderer.invoke('start-game', this.gameState.currentMode);
+                    this.updateUI();
+                } catch (error) {
+                    console.error('Fehler beim Starten des Spiels:', error);
+                }
+            }
+            
+            async stopGame() {
+                try {
+                    this.gameState = await ipcRenderer.invoke('stop-game');
+                    this.updateUI();
+                } catch (error) {
+                    console.error('Fehler beim Beenden des Spiels:', error);
+                }
+            }
+            
+            resetGame() {
+                this.gameState.currentScore = 0;
+                this.updateUI();
+            }
+            
+            updateUI() {
+                // Aktueller Score
+                document.getElementById('currentScore').textContent = this.gameState.currentScore;
+                
+                // Spielmodus
+                const modeName = this.gameState.currentMode ? 
+                    this.getGameModeName(this.gameState.currentMode) : 
+                    'Wählen Sie einen Spielmodus';
+                document.getElementById('currentGameMode').textContent = modeName;
+                
+                // Spiel-Status
+                const gameStatus = document.getElementById('gameStatus');
+                const gameStatusText = document.getElementById('gameStatusText');
+                const startBtn = document.getElementById('startGameBtn');
+                const stopBtn = document.getElementById('stopGameBtn');
+                
+                if (this.gameState.isPlaying) {
+                    gameStatus.style.background = '#00ff88';
+                    gameStatusText.textContent = 'Spiel läuft';
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                } else {
+                    gameStatus.style.background = '#ff4757';
+                    gameStatusText.textContent = 'Bereit';
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+                
+                // Statistiken
+                this.updateStatistics();
+            }
+            
+            getGameModeName(modeId) {
+                const modes = {
+                    '170-checkout-p5': '170 Checkout (P5)',
+                    '123-leiter-p4': '123-Leiter (P4)',
+                    'target-focus-programm1': 'Target Focus (P1)',
+                    'double-finish-programm2': 'Double Finish (P2)',
+                    '53-checkout-programm3': '53 Checkout (P3)'
+                };
+                return modes[modeId] || 'Unbekannter Modus';
+            }
+            
+            updateStatistics() {
+                const stats = this.gameState.statistics[this.gameState.currentMode] || {};
+                
+                document.getElementById('gamesPlayed').textContent = stats.gamesPlayed || 0;
+                document.getElementById('totalDarts').textContent = stats.totalDarts || 0;
+                document.getElementById('checkouts').textContent = stats.checkouts || 0;
+                
+                const average = stats.totalDarts > 0 ? 
+                    (stats.totalScore / stats.totalDarts).toFixed(2) : '0.00';
+                document.getElementById('average').textContent = average;
+            }
+            
+            startStatusUpdates() {
+                setInterval(async () => {
+                    await this.loadGameState();
+                    this.updateUI();
+                }, 1000);
+            }
+            
+            openBrowser() {
+                const { shell } = require('electron');
+                shell.openExternal('http://localhost:3000');
+            }
+            
+            openSettings() {
+                console.log('Einstellungen öffnen');
+                // TODO: Einstellungen-Fenster implementieren
+            }
+        }
+        
+        // App starten
+        new DesktopApp();
+    </script>
+</body>
+</html>

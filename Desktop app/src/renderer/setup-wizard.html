@@ -1,0 +1,2235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autodarts Trainer - Setup Wizard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .setup-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .progress-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .step.completed {
+            background: #00ff88;
+            color: #000;
+        }
+        
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .step.active .step-number {
+            background: #000;
+            color: #00ff88;
+        }
+        
+        .step.completed .step-number {
+            background: #000;
+            color: #00ff88;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #00ff88 #1a1a2e;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .main-content::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 4px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #00cc6a;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            padding: 0;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            background: #00ff88;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #000;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .config-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .config-section h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #2a2a2a;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+        
+        .url-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .url-item {
+            padding: 10px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .url-item code {
+            background: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .status-indicators {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #666;
+        }
+        
+        .status-dot.status-online {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .status-dot.status-offline {
+            background: #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0 0 10px 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .step-content {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .step-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        
+        .step-description {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #ccc;
+        }
+        
+        .board-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .board-option {
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .board-option:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .board-option.selected {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        .board-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .board-description {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .board-status {
+            font-size: 14px;
+            color: #00ff88;
+        }
+        
+        .board-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .board-input input {
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            width: 300px;
+        }
+        
+        .board-input input::placeholder {
+            color: #ccc;
+        }
+        
+        .camera-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .camera-slot {
+            aspect-ratio: 16/9;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .camera-slot.has-camera {
+            border-color: #00ff88;
+        }
+        
+        .camera-feed-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .camera-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #ccc;
+            font-size: 16px;
+            z-index: 1;
+        }
+        
+        .camera-feed.active {
+            display: block;
+        }
+        
+        .camera-placeholder.hidden {
+            display: none;
+        }
+        
+        .troubleshooting-section {
+            margin-top: 30px;
+            background: rgba(255, 170, 0, 0.1);
+            border: 2px solid rgba(255, 170, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .troubleshooting-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .troubleshooting-item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .troubleshooting-icon {
+            font-size: 24px;
+            margin-top: 5px;
+        }
+        
+        .troubleshooting-text {
+            flex: 1;
+        }
+        
+        .troubleshooting-text ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .troubleshooting-text li {
+            margin: 5px 0;
+            color: #ccc;
+        }
+        
+        .troubleshooting-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .board-config-section {
+            margin-top: 30px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .board-config-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .config-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .config-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .config-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .config-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+        }
+        
+        .config-group input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+        
+        .config-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .logs-section {
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .logs-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .logs-content {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-timestamp {
+            color: #888;
+            min-width: 70px;
+            font-size: 10px;
+        }
+        
+        .log-level {
+            min-width: 50px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .log-level.info {
+            color: #00ff88;
+        }
+        
+        .log-level.warning {
+            color: #ffaa00;
+        }
+        
+        .log-level.error {
+            color: #ff4444;
+        }
+        
+        .log-level.debug {
+            color: #888;
+        }
+        
+        .log-message {
+            flex: 1;
+            word-break: break-word;
+        }
+        
+        .camera-select {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+        }
+        
+        .camera-select select {
+            width: 100%;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+        }
+        
+        .camera-settings {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .setting-select {
+            padding: 10px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .calibration-area {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .calibration-controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .calibration-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .calibration-tab {
+            padding: 10px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calibration-tab.active {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.2);
+        }
+        
+        .calibration-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .control-button {
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .control-button:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .calibration-button {
+            background: #00ff88;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        .calibration-button:hover {
+            background: #00cc6a;
+        }
+        
+        .calibration-preview {
+            flex: 1;
+            aspect-ratio: 16/9;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calibration-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                rgba(0, 255, 136, 0.1) 0%,
+                rgba(0, 255, 136, 0.1) 50%,
+                transparent 50%,
+                transparent 100%
+            );
+            background-size: 20px 20px;
+        }
+        
+        .dartboard-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000 0%, #000 20%, #fff 20%, #fff 25%, #000 25%, #000 45%, #fff 45%, #fff 50%, #000 50%);
+            border: 4px solid #333;
+        }
+        
+        .dartboard-overlay::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        
+        .test-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .dartboard {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000 0%, #000 20%, #fff 20%, #fff 25%, #000 25%, #000 45%, #fff 45%, #fff 50%, #000 50%);
+            border: 8px solid #333;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .dartboard::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border-radius: 50%;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .test-button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button.primary {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+        
+        .test-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .test-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .test-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-results {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .test-result {
+            padding: 8px 16px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #00ff88;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-button {
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .nav-button:hover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+        
+        .nav-button.primary {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+        
+        .nav-button.primary:hover {
+            background: #00cc6a;
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+        
+        .status-dot.active {
+            background: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🎯 Autodarts Trainer</div>
+            <div class="progress-bar" id="progressBar">
+                <div class="step" data-step="1">
+                    <div class="step-number">1</div>
+                    <span>Sign up</span>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <span>Set up your board</span>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <span>Set up cameras</span>
+                </div>
+                <div class="step" data-step="4">
+                    <div class="step-number">4</div>
+                    <span>Test & Play</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="step-content">
+                <!-- Step 1: Sign up -->
+                <div id="step1" class="step-panel" style="display: none;">
+                    <div class="step-title">Willkommen bei Autodarts Trainer</div>
+                    <div class="step-description">
+                        Lassen Sie uns Ihr System einrichten, um mit dem Training zu beginnen.
+                    </div>
+                    <div class="status-bar">
+                        <div class="status-item">
+                            <div class="status-dot active"></div>
+                            <span>System bereit</span>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-dot active"></div>
+                            <span>Kamera-Erkennung aktiv</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Set up your board -->
+                <div id="step2" class="step-panel" style="display: none;">
+                    <div class="step-title">Set up your <strong>board</strong></div>
+                    <div class="step-description">
+                        To start playing with Autodarts, you need to create a board. Please give it a name.
+                    </div>
+                    
+                    <div class="board-selection">
+                        <div class="board-option" id="skipBoardOption">
+                            <div class="board-name">Direkt zum Spiel</div>
+                            <div class="board-description">Überspringen Sie die Board-Erstellung und gehen Sie direkt zum Spiel-Interface</div>
+                            <div class="board-input">
+                                <button class="test-button primary" id="skipBoardBtn">Spiel starten</button>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 20px 0; color: #ccc;">oder</div>
+                        
+                        <div class="board-option" id="createBoardOption">
+                            <div class="board-name">Neues Board erstellen</div>
+                            <div class="board-input">
+                                <input type="text" id="boardNameInput" placeholder="Mein erstes Board">
+                                <button class="test-button secondary" id="createBoardBtn">Board erstellen</button>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 20px 0; color: #ccc;">oder</div>
+                        
+                        <div class="board-option">
+                            <div class="board-name">Claim* one of your existing boards and move it over to this machine.</div>
+                            <div class="board-input">
+                                <select id="existingBoardSelect" class="setting-select">
+                                    <option value="">Select board</option>
+                                </select>
+                                <button class="test-button secondary" id="claimBoardBtn">Claim board</button>
+                            </div>
+                            <div style="font-size: 12px; color: #ccc; margin-top: 10px;">
+                                *This will remove the board from any other devices that might be using it.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Set up cameras -->
+                <div id="step3" class="step-panel" style="display: none;">
+                    <div class="step-title">Set up <strong>cameras</strong></div>
+                    <div class="step-description">
+                        Select your cameras if they are not already selected.
+                    </div>
+                    
+                    <div class="camera-grid" id="cameraGrid">
+                        <div class="camera-slot" data-camera="0">
+                            <div class="camera-feed-container">
+                                <video id="camera1" class="camera-feed" autoplay muted></video>
+                                <div class="camera-placeholder" id="placeholder1">Kamera 1</div>
+                            </div>
+                            <div class="camera-select">
+                                <select class="camera-select-dropdown" id="camera1-select">
+                                    <option value="">Select camera</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="camera-slot" data-camera="1">
+                            <div class="camera-feed-container">
+                                <video id="camera2" class="camera-feed" autoplay muted></video>
+                                <div class="camera-placeholder" id="placeholder2">Kamera 2</div>
+                            </div>
+                            <div class="camera-select">
+                                <select class="camera-select-dropdown" id="camera2-select">
+                                    <option value="">Select camera</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="camera-slot" data-camera="2">
+                            <div class="camera-feed-container">
+                                <video id="camera3" class="camera-feed" autoplay muted></video>
+                                <div class="camera-placeholder" id="placeholder3">Kamera 3</div>
+                            </div>
+                            <div class="camera-select">
+                                <select class="camera-select-dropdown" id="camera3-select">
+                                    <option value="">Select camera</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="camera-settings">
+                        <div class="setting-group">
+                            <div class="setting-label">Camera resolution</div>
+                            <select class="setting-select">
+                                <option value="1280x720">1280x720</option>
+                                <option value="1920x1080">1920x1080</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <div class="setting-label">Frames per second</div>
+                            <select class="setting-select">
+                                <option value="30">30</option>
+                                <option value="60">60</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <div class="setting-label">Camera standby time</div>
+                            <select class="setting-select">
+                                <option value="15">15 minutes</option>
+                                <option value="60">1 hour</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+            
+            <!-- Live Logs -->
+            <div class="logs-section">
+                <div class="section-title">📋 Live Logs</div>
+                <div class="logs-controls">
+                    <button class="btn btn-secondary" id="refreshLogsBtn">🔄 Aktualisieren</button>
+                    <button class="btn btn-secondary" id="clearLogsBtn">🗑️ Löschen</button>
+                    <button class="btn btn-secondary" id="toggleLogsBtn">👁️ Ein/Aus</button>
+                </div>
+                <div class="logs-content" id="liveLogsContent">
+                    <div class="log-entry">
+                        <span class="log-timestamp">[12:00:00]</span>
+                        <span class="log-level info">[INFO]</span>
+                        <span class="log-message">Setup-Wizard gestartet</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kamera-Troubleshooting -->
+            <div class="troubleshooting-section">
+                <div class="section-title">🔧 Kamera-Troubleshooting</div>
+                <div class="troubleshooting-content">
+                    <div class="troubleshooting-item">
+                        <div class="troubleshooting-icon">⚠️</div>
+                        <div class="troubleshooting-text">
+                            <strong>Kamera-Fehler beheben:</strong>
+                            <ul>
+                                <li>Stellen Sie sicher, dass keine andere App die Kamera verwendet</li>
+                                <li>Schließen Sie alle anderen Browser-Tabs mit Kamera-Zugriff</li>
+                                <li>Wählen Sie verschiedene Kameras aus den Dropdown-Menüs</li>
+                                <li>Starten Sie die App neu, falls Probleme bestehen</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="troubleshooting-actions">
+                        <button class="btn btn-secondary" id="refreshCamerasBtn">🔄 Kameras neu laden</button>
+                        <button class="btn btn-secondary" id="testCamerasBtn">🧪 Kamera-Test</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kalibrierungs-Funktionen -->
+            <div class="calibration-section">
+                <div class="section-title">🎯 Kamera-Kalibrierung</div>
+                        <div class="calibration-controls">
+                            <div class="calibration-buttons">
+                                <button class="calibration-btn" data-state="STABLE">STABLE</button>
+                                <button class="calibration-btn" data-state="EMPTY">EMPTY</button>
+                                <button class="calibration-btn" data-state="DART">DART</button>
+                                <button class="calibration-btn" data-state="HAND">HAND</button>
+                                <button class="calibration-btn" data-state="PARTIAL_TAKEOUT">PARTIAL TAKEOUT</button>
+                                <button class="calibration-btn" data-state="TAKEOUT">TAKEOUT</button>
+                            </div>
+                            
+                            <div class="calibration-actions">
+                                <button class="action-btn secondary" id="saveCalibration">Save</button>
+                                <button class="action-btn danger" id="removeCalibration">Remove</button>
+                                <button class="action-btn primary" id="startCalibration">
+                                    <span class="btn-icon">🎯</span>
+                                    Calibrate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- Step 4: Test & Play -->
+                <div id="step4" class="step-panel" style="display: none;">
+                    <div class="step-title">Throw <strong>darts</strong></div>
+                    <div class="step-description">
+                        It should say THROW next to the reset button. If not, press reset. Now you can throw your first darts!
+                    </div>
+                    
+                    <div class="test-area">
+                        <div class="dartboard" id="testDartboard"></div>
+                        
+                        <div class="test-controls">
+                            <button class="test-button secondary">▲ Reset</button>
+                            <button class="test-button primary" id="throwBtn">🎯 THROW</button>
+                            <button class="test-button secondary">S11</button>
+                            <button class="test-button secondary">S10</button>
+                            <button class="test-button secondary">S18</button>
+                        </div>
+                        
+                        <div class="test-results" id="testResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" disabled>Back</button>
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-dot active"></div>
+                    <span>v1.0.0</span>
+                </div>
+            </div>
+            <button class="nav-button primary" id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        class SetupWizard {
+            constructor() {
+                this.currentStep = 1;
+                this.totalSteps = 4;
+                this.setupData = {};
+                
+                this.init();
+            }
+            
+            async init() {
+                this.setupEventListeners();
+                await this.loadSetupData();
+                this.updateUI();
+            }
+            
+            setupEventListeners() {
+                // Navigation
+                document.getElementById('prevBtn').addEventListener('click', () => {
+                    this.prevStep();
+                });
+                
+                document.getElementById('nextBtn').addEventListener('click', () => {
+                    this.nextStep();
+                });
+                
+                // Board selection
+                document.getElementById('skipBoardBtn').addEventListener('click', () => {
+                    this.skipBoardCreation();
+                });
+                
+                document.getElementById('createBoardBtn').addEventListener('click', () => {
+                    this.createBoard();
+                });
+                
+                document.getElementById('claimBoardBtn').addEventListener('click', () => {
+                    this.claimBoard();
+                });
+                
+                // Camera selection
+                document.querySelectorAll('.camera-select-dropdown').forEach((select, index) => {
+                    select.addEventListener('change', (e) => {
+                        this.selectCamera(index, e.target.value);
+                    });
+                });
+                
+                // Test throw
+                document.getElementById('throwBtn').addEventListener('click', () => {
+                    this.testThrow();
+                });
+                
+                // Troubleshooting buttons
+                document.getElementById('refreshCamerasBtn').addEventListener('click', () => this.refreshCameras());
+                document.getElementById('testCamerasBtn').addEventListener('click', () => this.testCameras());
+                
+                // Log buttons
+                document.getElementById('refreshLogsBtn').addEventListener('click', () => this.refreshLogs());
+                document.getElementById('clearLogsBtn').addEventListener('click', () => this.clearLogs());
+                document.getElementById('toggleLogsBtn').addEventListener('click', () => this.toggleLogs());
+                
+            }
+            
+            async loadSetupData() {
+                try {
+                    const data = await ipcRenderer.invoke('get-setup-data');
+                    this.currentStep = data.currentStep;
+                    this.setupData = data.setupData;
+                    this.populateBoards(data.availableBoards);
+                    this.populateCameras(data.availableCameras);
+                } catch (error) {
+                    console.error('Fehler beim Laden der Setup-Daten:', error);
+                }
+            }
+            
+            populateBoards(boards) {
+                const select = document.getElementById('existingBoardSelect');
+                select.innerHTML = '<option value="">Select board</option>';
+                
+                boards.forEach(board => {
+                    const option = document.createElement('option');
+                    option.value = board.id;
+                    
+                    // Zeige Board-Name und Status mit besserer Formatierung
+                    let statusText = '';
+                    let statusIcon = '';
+                    let statusColor = '';
+                    
+                    if (board.status === 'online') {
+                        statusIcon = '🟢';
+                        statusText = 'Online';
+                        statusColor = '#00ff88';
+                        if (board.statistics) {
+                            statusText += ` • ${board.statistics.darts} Darts • ${board.statistics.accuracy}% Genauigkeit`;
+                        }
+                    } else {
+                        statusIcon = '🔴';
+                        statusText = 'Offline';
+                        statusColor = '#ff4444';
+                    }
+                    
+                    // Erstelle detaillierte Anzeige
+                    option.innerHTML = `
+                        <span style="font-weight: bold; color: #00ff88;">${board.name}</span>
+                        <span style="color: ${statusColor}; margin-left: 10px;">${statusIcon} ${statusText}</span>
+                    `;
+                    option.dataset.boardData = JSON.stringify(board);
+                    select.appendChild(option);
+                });
+                
+                // Verbessere das Select-Styling
+                select.style.cssText = `
+                    width: 100%;
+                    padding: 12px 16px;
+                    background: rgba(0, 0, 0, 0.6);
+                    border: 2px solid #00ff88;
+                    border-radius: 8px;
+                    color: #e0e0e0;
+                    font-size: 16px;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                `;
+                
+                // Hover-Effekt
+                select.addEventListener('mouseenter', () => {
+                    select.style.borderColor = '#00cc6a';
+                    select.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.3)';
+                });
+                
+                select.addEventListener('mouseleave', () => {
+                    select.style.borderColor = '#00ff88';
+                    select.style.boxShadow = 'none';
+                });
+            }
+            
+            populateCameras(cameras) {
+                document.querySelectorAll('.camera-select-dropdown').forEach(select => {
+                    select.innerHTML = '<option value="">Select camera</option>';
+                    
+                    cameras.forEach(camera => {
+                        const option = document.createElement('option');
+                        option.value = camera.id;
+                        option.textContent = camera.name;
+                        select.appendChild(option);
+                    });
+                });
+                
+                // Starte alle verfügbaren Kameras
+                this.startAllCameras();
+            }
+            
+        async startAllCameras() {
+            try {
+                this.addLogEntry('info', 'Kamera-Erkennung gestartet...');
+                
+                // Warte auf Kamera-Berechtigung
+                await this.requestCameraPermission();
+                
+                // Hole alle verfügbaren Kameras
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                console.log('📹 Verfügbare Kameras gefunden:', videoDevices.length);
+                this.addLogEntry('info', `${videoDevices.length} Kameras gefunden`);
+                
+                if (videoDevices.length === 0) {
+                    this.addLogEntry('error', 'Keine Kameras gefunden!');
+                    this.showNotification('Keine Kameras gefunden!', 'error');
+                    return;
+                }
+                
+                // Fülle Dropdown-Menüs mit verfügbaren Kameras
+                this.populateCameraDropdowns(videoDevices);
+                
+                // Starte Kameras nacheinander mit Verzögerung
+                for (let i = 0; i < 3; i++) {
+                    this.addLogEntry('info', `Starte Kamera ${i + 1}...`);
+                    await this.startCameraFromDropdown(i);
+                    // Warte zwischen Kamera-Starts
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
+                
+                console.log('📹 Alle Kamera-Feeds gestartet');
+                this.addLogEntry('info', 'Kamera-Setup abgeschlossen');
+            } catch (error) {
+                console.error('Fehler beim Starten der Kameras:', error);
+                this.addLogEntry('error', 'Fehler beim Starten der Kameras: ' + error.message);
+                this.showNotification('Fehler beim Starten der Kameras', 'error');
+            }
+        }
+        
+        async requestCameraPermission() {
+            try {
+                this.addLogEntry('info', 'Kamera-Berechtigung anfordern...');
+                
+                // Versuche verschiedene Video-Constraints für Hardware-MFT Problem
+                const constraints = [
+                    { video: { width: 320, height: 240, frameRate: 15 } },
+                    { video: { width: 640, height: 480, frameRate: 10 } },
+                    { video: { width: 160, height: 120, frameRate: 5 } },
+                    { video: true }
+                ];
+                
+                let stream = null;
+                let lastError = null;
+                
+                for (const constraint of constraints) {
+                    try {
+                        this.addLogEntry('info', `Versuche Kamera-Zugriff mit: ${JSON.stringify(constraint)}`);
+                        stream = await navigator.mediaDevices.getUserMedia(constraint);
+                        this.addLogEntry('info', 'Kamera-Zugriff erfolgreich');
+                        break;
+                    } catch (error) {
+                        this.addLogEntry('warning', `Constraint fehlgeschlagen: ${error.message}`);
+                        lastError = error;
+                        continue;
+                    }
+                }
+                
+                if (!stream) {
+                    throw lastError || new Error('Alle Kamera-Constraints fehlgeschlagen');
+                }
+                
+                // Stoppe Test-Stream sofort
+                stream.getTracks().forEach(track => track.stop());
+                console.log('✅ Kamera-Berechtigung erhalten');
+                this.addLogEntry('info', 'Kamera-Berechtigung erhalten');
+            } catch (error) {
+                console.error('❌ Kamera-Berechtigung verweigert:', error);
+                this.addLogEntry('error', 'Kamera-Berechtigung verweigert: ' + error.message);
+                
+                // Zeige detaillierte Fehlermeldung
+                if (error.name === 'NotAllowedError') {
+                    this.addLogEntry('error', 'Bitte erlauben Sie Kamera-Zugriff in Ihrem Browser');
+                } else if (error.name === 'NotFoundError') {
+                    this.addLogEntry('error', 'Keine Kamera gefunden - prüfen Sie die Verbindung');
+                } else if (error.name === 'NotReadableError') {
+                    this.addLogEntry('error', 'Kamera wird von anderer App verwendet');
+                } else if (error.message.includes('Hardware-MFT')) {
+                    this.addLogEntry('error', 'Hardware-MFT Fehler - versuchen Sie andere Kamera-Einstellungen');
+                }
+                
+                // Nicht abbrechen, sondern mit Fallback fortfahren
+                this.addLogEntry('warning', 'Kamera-Berechtigung fehlgeschlagen - verwende Fallback-Modus');
+            }
+        }
+            
+        populateCameraDropdowns(videoDevices) {
+            this.addLogEntry('info', 'Fülle Kamera-Dropdowns...');
+            
+            // Fülle alle Dropdown-Menüs mit verfügbaren Kameras
+            for (let i = 1; i <= 3; i++) {
+                const select = document.getElementById(`camera${i}-select`);
+                if (select) {
+                    // Lösche vorhandene Optionen (außer der ersten)
+                    select.innerHTML = '<option value="">Select camera</option>';
+                    
+                    // Füge verfügbare Kameras hinzu
+                    videoDevices.forEach((device, index) => {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Camera ${index + 1}`;
+                        select.appendChild(option);
+                    });
+                    
+                    // Setze Event-Listener für Kamera-Wechsel
+                    select.addEventListener('change', (e) => {
+                        this.onCameraChange(i - 1, e.target.value);
+                    });
+                    
+                    this.addLogEntry('info', `Dropdown ${i} mit ${videoDevices.length} Kameras gefüllt`);
+                } else {
+                    this.addLogEntry('error', `Dropdown ${i} nicht gefunden`);
+                }
+            }
+        }
+        
+        async startCameraFromDropdown(slotIndex) {
+            const select = document.getElementById(`camera${slotIndex + 1}-select`);
+            const selectedDeviceId = select.value;
+            
+            if (!selectedDeviceId) {
+                console.log(`Kamera ${slotIndex + 1}: Keine Kamera ausgewählt`);
+                this.showPlaceholderForSlot(slotIndex);
+                return;
+            }
+            
+            try {
+                const video = document.getElementById(`camera${slotIndex + 1}`);
+                const placeholder = document.getElementById(`placeholder${slotIndex + 1}`);
+                
+                // Stoppe vorherigen Stream
+                if (video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                    video.srcObject = null;
+                }
+                
+                // Warte kurz zwischen Kamera-Starts
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Versuche verschiedene Video-Constraints für Hardware-MFT Problem
+                const constraints = [
+                    { 
+                        video: { 
+                            deviceId: { exact: selectedDeviceId },
+                            width: { ideal: 640, max: 640 },
+                            height: { ideal: 480, max: 480 },
+                            frameRate: { ideal: 15, max: 15 }
+                        } 
+                    },
+                    { 
+                        video: { 
+                            deviceId: { exact: selectedDeviceId },
+                            width: { ideal: 320, max: 320 },
+                            height: { ideal: 240, max: 240 },
+                            frameRate: { ideal: 10, max: 10 }
+                        } 
+                    },
+                    { 
+                        video: { 
+                            deviceId: { exact: selectedDeviceId },
+                            width: { ideal: 160, max: 160 },
+                            height: { ideal: 120, max: 120 },
+                            frameRate: { ideal: 5, max: 5 }
+                        } 
+                    },
+                    { 
+                        video: { 
+                            deviceId: { exact: selectedDeviceId }
+                        } 
+                    }
+                ];
+                
+                let stream = null;
+                let lastError = null;
+                
+                for (const constraint of constraints) {
+                    try {
+                        console.log(`📹 Versuche Kamera ${slotIndex + 1} mit Constraint:`, constraint);
+                        stream = await navigator.mediaDevices.getUserMedia(constraint);
+                        console.log(`✅ Kamera ${slotIndex + 1} erfolgreich gestartet`);
+                        break;
+                    } catch (error) {
+                        console.warn(`⚠️ Kamera ${slotIndex + 1} Constraint fehlgeschlagen:`, error.message);
+                        lastError = error;
+                        continue;
+                    }
+                }
+                
+                if (!stream) {
+                    throw lastError || new Error('Alle Video-Constraints fehlgeschlagen');
+                }
+                
+                video.srcObject = stream;
+                video.classList.add('active');
+                placeholder.classList.add('hidden');
+                
+                // Event-Listener für Stream-Ende
+                stream.getVideoTracks()[0].addEventListener('ended', () => {
+                    console.log(`📹 Kamera ${slotIndex + 1} Stream beendet`);
+                    this.showPlaceholderForSlot(slotIndex);
+                });
+                
+                console.log(`📹 Kamera ${slotIndex + 1} erfolgreich gestartet: ${selectedDeviceId}`);
+                this.addLogEntry('info', `Kamera ${slotIndex + 1} erfolgreich gestartet`);
+            } catch (error) {
+                console.error(`❌ Fehler bei Kamera ${slotIndex + 1}:`, error);
+                this.addLogEntry('error', `Kamera ${slotIndex + 1} Fehler: ${error.message}`);
+                this.showPlaceholderForSlot(slotIndex);
+                this.showNotification(`Kamera ${slotIndex + 1} konnte nicht gestartet werden`, 'error');
+            }
+        }
+        
+        async onCameraChange(slotIndex, deviceId) {
+            console.log(`Kamera ${slotIndex + 1} gewechselt zu: ${deviceId}`);
+            await this.startCameraFromDropdown(slotIndex);
+        }
+        
+        showPlaceholderForSlot(slotIndex) {
+            const video = document.getElementById(`camera${slotIndex + 1}`);
+            const placeholder = document.getElementById(`placeholder${slotIndex + 1}`);
+            
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+            }
+            
+            video.classList.remove('active');
+            placeholder.classList.remove('hidden');
+            
+            // Zeige Fehler-Text im Placeholder
+            placeholder.innerHTML = `
+                <div style="color: #ff4444; font-size: 14px; margin-bottom: 10px;">
+                    ⚠️ Kamera ${slotIndex + 1} nicht verfügbar
+                </div>
+                <div style="color: #888; font-size: 12px;">
+                    Wählen Sie eine andere Kamera aus dem Dropdown
+                </div>
+            `;
+        }
+        
+        // Notification-Funktion
+        showNotification(message, type = 'info') {
+            try {
+                // Erstelle Notification-Element
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️'}</span>
+                        <span class="notification-message">${message}</span>
+                    </div>
+                `;
+                
+                // Füge Styles hinzu
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#00ff88' : type === 'error' ? '#ff4444' : type === 'warning' ? '#ffaa00' : '#0088ff'};
+                    color: #000;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 10000;
+                    font-weight: bold;
+                    max-width: 400px;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                
+                // Füge Animation hinzu
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                // Füge zur Seite hinzu
+                document.body.appendChild(notification);
+                
+                // Entferne nach 3 Sekunden
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+                
+                console.log(`📢 Notification (${type}): ${message}`);
+            } catch (error) {
+                console.error('Fehler beim Anzeigen der Notification:', error);
+                // Fallback: Einfache Alert
+                alert(`${type.toUpperCase()}: ${message}`);
+            }
+        }
+        
+        // Log-Funktionen
+        async refreshLogs() {
+            try {
+                // Versuche verschiedene Ports
+                const ports = [3002, 3000, 8080];
+                let logs = [];
+                let success = false;
+                
+                for (const port of ports) {
+                    try {
+                        const response = await fetch(`http://localhost:${port}/api/logs`);
+                        if (response.ok) {
+                            logs = await response.json();
+                            success = true;
+                            this.addLogEntry('info', `Logs von Port ${port} geladen`);
+                            break;
+                        }
+                    } catch (error) {
+                        console.log(`Port ${port} nicht erreichbar:`, error.message);
+                    }
+                }
+                
+                if (success) {
+                    this.displayLiveLogs(logs);
+                    this.addLogEntry('info', 'Logs aktualisiert');
+                } else {
+                    // Fallback: Lokale Logs
+                    this.addLogEntry('warning', 'Server nicht erreichbar - zeige lokale Logs');
+                    this.displayLocalLogs();
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Logs:', error);
+                this.addLogEntry('error', 'Fehler beim Laden der Logs: ' + error.message);
+                this.displayLocalLogs();
+            }
+        }
+        
+        displayLocalLogs() {
+            const localLogs = [
+                { timestamp: new Date().toISOString(), level: 'info', message: 'Setup-Wizard gestartet' },
+                { timestamp: new Date().toISOString(), level: 'warning', message: 'Server nicht erreichbar - lokale Logs' },
+                { timestamp: new Date().toISOString(), level: 'info', message: 'Kamera-Erkennung gestartet' }
+            ];
+            this.displayLiveLogs(localLogs);
+        }
+        
+        async clearLogs() {
+            if (confirm('Alle Logs löschen?')) {
+                try {
+                    await fetch('/api/logs', { method: 'DELETE' });
+                    document.getElementById('liveLogsContent').innerHTML = '';
+                    this.addLogEntry('info', 'Logs gelöscht');
+                } catch (error) {
+                    this.addLogEntry('error', 'Fehler beim Löschen der Logs: ' + error.message);
+                }
+            }
+        }
+        
+        toggleLogs() {
+            const logsContent = document.getElementById('liveLogsContent');
+            const toggleBtn = document.getElementById('toggleLogsBtn');
+            
+            if (logsContent.style.display === 'none') {
+                logsContent.style.display = 'block';
+                toggleBtn.textContent = '👁️ Ein/Aus';
+                this.addLogEntry('info', 'Logs eingeblendet');
+            } else {
+                logsContent.style.display = 'none';
+                toggleBtn.textContent = '👁️ Ein/Aus';
+                this.addLogEntry('info', 'Logs ausgeblendet');
+            }
+        }
+        
+        displayLiveLogs(logs) {
+            const logsContent = document.getElementById('liveLogsContent');
+            
+            if (logs.length === 0) {
+                logsContent.innerHTML = '<div class="log-entry"><span class="log-message">Keine Logs verfügbar</span></div>';
+                return;
+            }
+            
+            logsContent.innerHTML = logs.map(log => `
+                <div class="log-entry">
+                    <span class="log-timestamp">[${this.formatTime(log.timestamp)}]</span>
+                    <span class="log-level ${log.level}">[${log.level.toUpperCase()}]</span>
+                    <span class="log-message">${log.message}</span>
+                </div>
+            `).join('');
+            
+            // Scroll to bottom
+            logsContent.scrollTop = logsContent.scrollHeight;
+        }
+        
+        addLogEntry(level, message) {
+            const logsContent = document.getElementById('liveLogsContent');
+            const timestamp = new Date().toLocaleTimeString('de-DE', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="log-level ${level}">[${level.toUpperCase()}]</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            logsContent.appendChild(logEntry);
+            
+            // Scroll to bottom
+            logsContent.scrollTop = logsContent.scrollHeight;
+            
+            // Entferne alte Logs (max 50 Einträge)
+            const entries = logsContent.querySelectorAll('.log-entry');
+            if (entries.length > 50) {
+                entries[0].remove();
+            }
+        }
+        
+        formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('de-DE', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+        }
+        
+        
+        
+        
+        async saveModalBoardConfig() {
+            const boardId = document.getElementById('modalBoardIdInput').value.trim();
+            const apiKey = document.getElementById('modalApiKeyInput').value.trim();
+            
+            if (!boardId || !apiKey) {
+                this.showNotification('Bitte Board-ID und API-Key eingeben!', 'error');
+                return;
+            }
+            
+            // Aktualisiere Hauptformular
+            document.getElementById('boardIdInput').value = boardId;
+            document.getElementById('apiKeyInput').value = apiKey;
+            
+            // Speichere Konfiguration
+            await this.saveBoardConfig();
+            this.showNotification('Board-Config gespeichert!', 'success');
+        }
+        
+        async testModalBoardConfig() {
+            const boardId = document.getElementById('modalBoardIdInput').value.trim();
+            const apiKey = document.getElementById('modalApiKeyInput').value.trim();
+            
+            if (!boardId || !apiKey) {
+                this.showNotification('Bitte Board-ID und API-Key eingeben!', 'error');
+                return;
+            }
+            
+            this.showNotification('Teste Board-Verbindung...', 'info');
+            await this.testBoardConfig();
+        }
+        
+        closeBoardConfigModal() {
+            const modal = document.getElementById('boardConfigModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Board-Config Funktionen
+        async saveBoardConfig() {
+            const boardId = document.getElementById('boardIdInput').value.trim();
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            
+            if (!boardId || !apiKey) {
+                this.addLogEntry('error', 'Bitte Board-ID und API-Key eingeben!');
+                this.showNotification('Bitte Board-ID und API-Key eingeben!', 'error');
+                return;
+            }
+            
+            try {
+                // Speichere lokal im localStorage
+                const config = {
+                    boardId: boardId,
+                    apiKey: apiKey,
+                    savedAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem('autodartsBoardConfig', JSON.stringify(config));
+                
+                this.addLogEntry('info', `Board-Config gespeichert: ${boardId}`);
+                this.showNotification('Board-Config gespeichert!', 'success');
+                
+                // Versuche auch Server zu speichern
+                try {
+                    const response = await fetch('http://localhost:3002/api/board-config', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(config)
+                    });
+                    
+                    if (response.ok) {
+                        this.addLogEntry('info', 'Board-Config auch auf Server gespeichert');
+                    }
+                } catch (serverError) {
+                    this.addLogEntry('warning', 'Server nicht erreichbar - nur lokal gespeichert');
+                }
+                
+            } catch (error) {
+                this.addLogEntry('error', 'Fehler beim Speichern: ' + error.message);
+                this.showNotification('Fehler beim Speichern!', 'error');
+            }
+        }
+        
+        async loadBoardConfig() {
+            try {
+                // Lade von localStorage
+                const savedConfig = localStorage.getItem('autodartsBoardConfig');
+                if (savedConfig) {
+                    const config = JSON.parse(savedConfig);
+                    document.getElementById('boardIdInput').value = config.boardId || '';
+                    document.getElementById('apiKeyInput').value = config.apiKey || '';
+                    this.addLogEntry('info', 'Board-Config aus lokalem Speicher geladen');
+                    this.showNotification('Board-Config geladen!', 'success');
+                } else {
+                    this.addLogEntry('warning', 'Keine gespeicherte Board-Config gefunden');
+                    this.showNotification('Keine gespeicherte Konfiguration gefunden!', 'warning');
+                }
+                
+                // Versuche auch vom Server zu laden
+                try {
+                    const response = await fetch('http://localhost:3002/api/board-config');
+                    if (response.ok) {
+                        const serverConfig = await response.json();
+                        if (serverConfig.boardId) {
+                            document.getElementById('boardIdInput').value = serverConfig.boardId;
+                            document.getElementById('apiKeyInput').value = serverConfig.apiKey || '';
+                            this.addLogEntry('info', 'Board-Config auch vom Server geladen');
+                        }
+                    }
+                } catch (serverError) {
+                    this.addLogEntry('warning', 'Server nicht erreichbar - nur lokale Konfiguration');
+                }
+                
+            } catch (error) {
+                this.addLogEntry('error', 'Fehler beim Laden: ' + error.message);
+                this.showNotification('Fehler beim Laden!', 'error');
+            }
+        }
+        
+        async testBoardConfig() {
+            const boardId = document.getElementById('boardIdInput').value.trim();
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            
+            if (!boardId || !apiKey) {
+                this.addLogEntry('error', 'Bitte Board-ID und API-Key eingeben!');
+                this.showNotification('Bitte Board-ID und API-Key eingeben!', 'error');
+                return;
+            }
+            
+            try {
+                this.addLogEntry('info', 'Teste Board-Verbindung...');
+                
+                // Teste verschiedene Board-URLs
+                const boardUrls = [
+                    `http://192.168.2.72:3180/config`,
+                    `http://localhost:3180/config`,
+                    `http://192.168.1.1:3180/config`
+                ];
+                
+                let testSuccessful = false;
+                
+                for (const boardUrl of boardUrls) {
+                    try {
+                        this.addLogEntry('info', `Teste Verbindung zu: ${boardUrl}`);
+                        
+                        // Teste mit fetch
+                        const response = await fetch(boardUrl, {
+                            method: 'GET',
+                            timeout: 5000,
+                            headers: {
+                                'Authorization': `Bearer ${apiKey}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            this.addLogEntry('info', `Board-Verbindung erfolgreich: ${boardUrl}`);
+                            testSuccessful = true;
+                            break;
+                        } else {
+                            this.addLogEntry('warning', `Board-URL nicht erreichbar: ${boardUrl} (${response.status})`);
+                        }
+                    } catch (error) {
+                        this.addLogEntry('warning', `Board-URL Fehler: ${boardUrl} - ${error.message}`);
+                    }
+                }
+                
+                if (testSuccessful) {
+                    this.addLogEntry('info', 'Board-Verbindung erfolgreich getestet');
+                    this.showNotification('Board-Verbindung erfolgreich!', 'success');
+                } else {
+                    this.addLogEntry('warning', 'Keine Board-URL erreichbar - prüfen Sie die Netzwerkverbindung');
+                    this.showNotification('Board-Verbindung fehlgeschlagen - prüfen Sie die Netzwerkverbindung', 'warning');
+                }
+                
+            } catch (error) {
+                this.addLogEntry('error', 'Board-Test fehlgeschlagen: ' + error.message);
+                this.showNotification('Board-Test fehlgeschlagen!', 'error');
+            }
+        }
+        
+        // Troubleshooting-Funktionen
+        async refreshCameras() {
+            this.addLogEntry('info', 'Kamera-Neustart gestartet...');
+            try {
+                await this.startAllCameras();
+                this.addLogEntry('info', 'Kamera-Neustart abgeschlossen');
+            } catch (error) {
+                this.addLogEntry('error', 'Fehler beim Kamera-Neustart: ' + error.message);
+            }
+        }
+        
+        async testCameras() {
+            this.addLogEntry('info', 'Kamera-Test gestartet...');
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                this.addLogEntry('info', `Kamera-Test: ${videoDevices.length} Kameras gefunden`);
+                
+                for (let i = 0; i < videoDevices.length; i++) {
+                    const device = videoDevices[i];
+                    this.addLogEntry('info', `Kamera ${i + 1}: ${device.label || 'Unbekannt'}`);
+                }
+                
+                this.addLogEntry('info', 'Kamera-Test abgeschlossen');
+            } catch (error) {
+                this.addLogEntry('error', 'Fehler beim Kamera-Test: ' + error.message);
+            }
+        }
+            
+            showTestImageForSlot(slotIndex) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 320;
+                canvas.height = 240;
+                const ctx = canvas.getContext('2d');
+                
+                // Zeichne Test-Pattern
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, 320, 240);
+                
+                ctx.fillStyle = '#00ff88';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`Test Kamera ${slotIndex + 1}`, 160, 120);
+                
+                // Konvertiere zu Video-Stream
+                const stream = canvas.captureStream(30);
+                const video = document.getElementById(`camera${slotIndex + 1}`);
+                const placeholder = document.getElementById(`placeholder${slotIndex + 1}`);
+                
+                if (video) {
+                    video.srcObject = stream;
+                    video.classList.add('active');
+                    placeholder.classList.add('hidden');
+                }
+            }
+            
+            showTestImages() {
+                // Erstelle Test-Bilder für die Kameras
+                const canvas1 = document.createElement('canvas');
+                const canvas2 = document.createElement('canvas');
+                const canvas3 = document.createElement('canvas');
+                
+                [canvas1, canvas2, canvas3].forEach((canvas, index) => {
+                    canvas.width = 320;
+                    canvas.height = 240;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Zeichne Test-Pattern
+                    ctx.fillStyle = '#1a1a2e';
+                    ctx.fillRect(0, 0, 320, 240);
+                    
+                    ctx.fillStyle = '#00ff88';
+                    ctx.font = '20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`Test Kamera ${index + 1}`, 160, 120);
+                    
+                    // Konvertiere zu Video-Stream
+                    const stream = canvas.captureStream(30);
+                    const video = document.getElementById(`camera${index + 1}`);
+                    if (video) {
+                        video.srcObject = stream;
+                        video.classList.add('active');
+                        document.getElementById(`placeholder${index + 1}`).classList.add('hidden');
+                    }
+                });
+                
+                console.log('📹 Test-Kamera-Bilder angezeigt');
+            }
+            
+            updateUI() {
+                // Update progress bar
+                document.querySelectorAll('.step').forEach((step, index) => {
+                    const stepNumber = index + 1;
+                    step.classList.remove('active', 'completed');
+                    
+                    if (stepNumber === this.currentStep) {
+                        step.classList.add('active');
+                    } else if (stepNumber < this.currentStep) {
+                        step.classList.add('completed');
+                    }
+                });
+                
+                // Show current step
+                document.querySelectorAll('.step-panel').forEach((panel, index) => {
+                    panel.style.display = index + 1 === this.currentStep ? 'block' : 'none';
+                });
+                
+                // Update navigation buttons
+                document.getElementById('prevBtn').disabled = this.currentStep === 1;
+                
+                if (this.currentStep === this.totalSteps) {
+                    document.getElementById('nextBtn').textContent = 'Finish';
+                } else {
+                    document.getElementById('nextBtn').textContent = 'Next';
+                }
+            }
+            
+            async nextStep() {
+                if (this.currentStep === this.totalSteps) {
+                    await this.finishSetup();
+                    return;
+                }
+                
+                try {
+                    const result = await ipcRenderer.invoke('next-step');
+                    if (result.success) {
+                        this.currentStep = result.currentStep;
+                        this.updateUI();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim nächsten Schritt:', error);
+                }
+            }
+            
+            async prevStep() {
+                try {
+                    const result = await ipcRenderer.invoke('prev-step');
+                    if (result.success) {
+                        this.currentStep = result.currentStep;
+                        this.updateUI();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim vorherigen Schritt:', error);
+                }
+            }
+            
+            async skipBoardCreation() {
+                try {
+                    console.log('Board-Erstellung übersprungen - öffne Board-Konfiguration');
+                    
+                    // Öffne das Hauptfenster mit Board-Konfiguration
+                    const result = await ipcRenderer.invoke('open-board-config');
+                    if (result.success) {
+                        console.log('Board-Konfiguration geöffnet');
+                        // Schließe den Setup Wizard
+                        window.close();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Öffnen der Board-Konfiguration:', error);
+                    // Fallback: Gehe zum nächsten Schritt
+                    this.nextStep();
+                }
+            }
+            
+            async createBoard() {
+                const boardName = document.getElementById('boardNameInput').value;
+                if (!boardName.trim()) {
+                    alert('Bitte geben Sie einen Board-Namen ein!');
+                    return;
+                }
+                
+                try {
+                    const result = await ipcRenderer.invoke('create-board', boardName);
+                    if (result.success) {
+                        console.log('Board erstellt:', result.board);
+                        this.nextStep();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Erstellen des Boards:', error);
+                }
+            }
+            
+            async claimBoard() {
+                const select = document.getElementById('existingBoardSelect');
+                const boardId = select.value;
+                if (!boardId) {
+                    alert('Bitte wählen Sie ein Board aus!');
+                    return;
+                }
+                
+                try {
+                    // Hole Board-Daten aus dem selected option
+                    const selectedOption = select.options[select.selectedIndex];
+                    const boardData = JSON.parse(selectedOption.dataset.boardData);
+                    
+                    console.log('Board-Daten:', boardData);
+                    console.log('Board-ID:', boardData.id);
+                    console.log('API-Key:', boardData.apiKey);
+                    console.log('Board-URL:', boardData.url);
+                    
+                    const result = await ipcRenderer.invoke('select-board', boardId);
+                    if (result.success) {
+                        console.log('Board ausgewählt:', result.board);
+                        this.nextStep();
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Auswählen des Boards:', error);
+                }
+            }
+            
+            async selectCamera(cameraIndex, cameraId) {
+                if (!cameraId) return;
+                
+                try {
+                    const result = await ipcRenderer.invoke('select-camera', cameraIndex, cameraId);
+                    if (result.success) {
+                        const cameraSlot = document.querySelector(`[data-camera="${cameraIndex}"]`);
+                        cameraSlot.classList.add('has-camera');
+                        console.log('Kamera ausgewählt:', result.camera);
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Auswählen der Kamera:', error);
+                }
+            }
+            
+            async testThrow() {
+                const throwData = {
+                    score: 'D7',
+                    timestamp: new Date().toISOString()
+                };
+                
+                try {
+                    const result = await ipcRenderer.invoke('test-throw', throwData);
+                    if (result.success) {
+                        this.showTestResult(result.result);
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Wurf-Test:', error);
+                }
+            }
+            
+            showTestResult(result) {
+                const resultsContainer = document.getElementById('testResults');
+                const resultElement = document.createElement('div');
+                resultElement.className = 'test-result';
+                resultElement.textContent = `${result.detectedScore} (${Math.round(result.confidence * 100)}%)`;
+                resultsContainer.appendChild(resultElement);
+                
+                // Simuliere Dart-Position auf dem Board
+                this.showDartOnBoard(result);
+            }
+            
+            showDartOnBoard(result) {
+                const dartboard = document.getElementById('testDartboard');
+                const dart = document.createElement('div');
+                dart.style.position = 'absolute';
+                dart.style.width = '8px';
+                dart.style.height = '8px';
+                dart.style.background = '#ff4757';
+                dart.style.borderRadius = '50%';
+                dart.style.left = `${Math.random() * 80 + 10}%`;
+                dart.style.top = `${Math.random() * 80 + 10}%`;
+                dart.style.zIndex = '10';
+                
+                dartboard.style.position = 'relative';
+                dartboard.appendChild(dart);
+                
+                // Entferne Dart nach 3 Sekunden
+                setTimeout(() => {
+                    if (dart.parentNode) {
+                        dart.parentNode.removeChild(dart);
+                    }
+                }, 3000);
+            }
+            
+            async finishSetup() {
+                try {
+                    const result = await ipcRenderer.invoke('finish-setup');
+                    if (result.success) {
+                        console.log('Setup abgeschlossen!');
+                        // Hier könnte die Haupt-App gestartet werden
+                    }
+                } catch (error) {
+                    console.error('Fehler beim Abschließen des Setups:', error);
+                }
+            }
+        }
+        
+        // Setup Wizard starten
+        new SetupWizard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "api_key": "-zLcLpJZ9OKAYz6PjDnupv29_tIhUoJ3",
+  "board_id": "a78e6cec-330a-493c-bfe9-c06eb3a4d3bd",
+  "board_token": "",
+  "username": "handtuch2981@gmail.com",
+  "password": "",
+  "desktop_app": {
+    "enabled": true,
+    "auto_start": true,
+    "auto_connect": true,
+    "api_endpoint": "http://localhost:3000",
+    "websocket_port": 3001,
+    "bridge_port": 8767,
+    "possible_paths": [
+      "C:\\Users\\{username}\\AppData\\Local\\autodarts-desktop\\app-1.3.2\\Autodarts Desktop.exe",
+      "C:\\Users\\{username}\\AppData\\Local\\autodarts-desktop\\Autodarts Desktop.exe",
+      "C:\\Program Files\\Autodarts Desktop\\Autodarts Desktop.exe",
+      "C:\\Program Files (x86)\\Autodarts Desktop\\Autodarts Desktop.exe",
+      "C:\\Users\\{username}\\Desktop\\Downloads\\Autodarts Desktop-1.3.2 Setup\\lib\\net45\\Autodarts Desktop.exe"
+    ]
+  },
+  "integration": {
+    "sync_scores": true,
+    "sync_players": true,
+    "sync_games": true,
+    "auto_detect_desktop": true
+  }
+}

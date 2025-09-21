@@ -5,6 +5,7 @@ Ein moderner, webbasierter Dart-Trainer mit automatischer Score-Erkennung und ve
 ## 🚀 Live Demo
 
 **GitHub Pages:** [https://spitzbuwe.github.io/Darttraining/play-interface.html](https://spitzbuwe.github.io/Darttraining/play-interface.html)
+**Cloudflare Pages:** [https://darttraining.pages.dev/play-interface.html](https://darttraining.pages.dev/play-interface.html)
 
 ## ✨ Features
 

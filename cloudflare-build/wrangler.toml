@@ -1,0 +1,26 @@
+name = "autodarts-trainer"
+compatibility_date = "2024-01-01"
+
+[env.production]
+name = "autodarts-trainer"
+
+# Cloudflare Pages Konfiguration
+[pages]
+# Ignoriere große Dateien
+exclude = [
+  "AutodartsTrainer/**",
+  "**/AutodartsTrainer/**",
+  "**/*.dll",
+  "**/*.exe",
+  "**/node_modules/**",
+  "**/Desktop app/**"
+]
+
+# Nur diese Dateien deployen
+include = [
+  "play-interface.html",
+  "index.html",
+  ".nojekyll",
+  "assets/**",
+  "README.md"
+]

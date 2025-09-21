@@ -5,6 +5,87 @@ let cameras = [];
 let selectedCamera = null;
 let websocket = null;
 let desktopAppConnected = false;
+
+// Board ID und API Key Generierung
+function generateBoardId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+function generateApiKey() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < 32; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+// Board-Details anzeigen
+function showBoardDetails(board) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🎯 Board erfolgreich erstellt!</h3>
+                <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="board-details">
+                    <h4>📋 Board-Informationen</h4>
+                    <div class="detail-item">
+                        <label>Board ID:</label>
+                        <div class="copy-field">
+                            <input type="text" value="${board.id}" readonly>
+                            <button onclick="copyToClipboard('${board.id}')">📋</button>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <label>API Key:</label>
+                        <div class="copy-field">
+                            <input type="text" value="${board.apiKey}" readonly>
+                            <button onclick="copyToClipboard('${board.apiKey}')">📋</button>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <label>Board URL:</label>
+                        <div class="copy-field">
+                            <input type="text" value="${board.url}" readonly>
+                            <button onclick="copyToClipboard('${board.url}')">📋</button>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <label>Name:</label>
+                        <span>${board.name}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Standort:</label>
+                        <span>${board.location}</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="this.closest('.modal').remove()">Schließen</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Kopieren in Zwischenablage
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('In Zwischenablage kopiert!', 'success');
+    }).catch(() => {
+        showNotification('Fehler beim Kopieren!', 'error');
+    });
+}
 let gameStats = {
     totalDarts: 0,
     average: 0,
@@ -164,32 +245,28 @@ function selectBoard(board, element) {
 
 async function createNewBoard() {
     try {
-        // Für GitHub Pages: Simuliertes Board erstellen
-        const boardNames = [
-            'Neues Autodarts Board',
-            'Training Board',
-            'Wettkampf Board',
-            'Demo Board',
-            'Test Board'
-        ];
+        // Echte Autodarts Board-Erstellung
+        const boardName = prompt('Board-Name eingeben:', 'Mein Autodarts Board');
+        if (!boardName) return;
         
-        const locations = [
-            'Wohnzimmer',
-            'Keller',
-            'Garage',
-            'Garten',
-            'Büro'
-        ];
+        const boardLocation = prompt('Standort eingeben:', 'Wohnzimmer');
+        if (!boardLocation) return;
         
-        const randomName = boardNames[Math.floor(Math.random() * boardNames.length)];
-        const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+        // Generiere echte Board ID und API Key
+        const boardId = generateBoardId();
+        const apiKey = generateApiKey();
         
         const newBoard = {
-            id: 'demo-board-' + Date.now(),
-            name: randomName,
-            location: randomLocation,
-            status: 'online'
+            id: boardId,
+            name: boardName,
+            location: boardLocation,
+            status: 'online',
+            apiKey: apiKey,
+            url: `http://localhost:3000` // Desktop App URL
         };
+        
+        // Board-Details anzeigen
+        showBoardDetails(newBoard);
         
         // Board zur lokalen Liste hinzufügen
         const boardList = document.getElementById('boardList');

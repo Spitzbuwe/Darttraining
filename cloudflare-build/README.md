@@ -144,4 +144,4 @@ Bei Fragen oder Problemen:
 
 ---
 
-**Viel Spaß beim Dart-Training! 🎯**
+**Viel Spaß beim Dart-Training! 🎯**# Cloudflare Pages Deployment

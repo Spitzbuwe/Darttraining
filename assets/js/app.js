@@ -139,41 +139,69 @@ async function initializeApp() {
 // Board Management
 async function loadBoards() {
     try {
-        // Für GitHub Pages: Simulierte Boards laden
-        const mockBoards = [
-            {
-                id: 'demo-board-1',
-                name: 'Haupt-Board (Lokal)',
-                location: 'Wohnzimmer',
-                status: 'online'
-            },
-            {
-                id: 'demo-board-2', 
-                name: 'Training Board',
-                location: 'Keller',
-                status: 'online'
-            },
-            {
-                id: 'demo-board-3',
-                name: 'Gäste Board',
-                location: 'Garage',
-                status: 'offline'
-            }
-        ];
-        displayBoards(mockBoards);
+        // API-Aufruf für Boards laden
+        const response = await fetch('/api/scheiben');
         
-        // Erstes Board automatisch auswählen
-        if (mockBoards.length > 0) {
-            setTimeout(() => {
-                const firstBoard = mockBoards[0];
-                const firstBoardElement = document.querySelector('.board-item');
-                if (firstBoardElement) {
-                    selectBoard(firstBoard, firstBoardElement);
-                }
-            }, 500);
+        if (!response.ok) {
+            throw new Error('Fehler beim Laden der Boards');
         }
+        
+        const data = await response.json();
+        const boards = data.scheiben || [];
+        
+        if (boards.length === 0) {
+            // Fallback: Demo-Boards anzeigen
+            const mockBoards = [
+                {
+                    id: 'demo-board-1',
+                    name: 'Haupt-Board (Lokal)',
+                    location: 'Wohnzimmer',
+                    status: 'online'
+                },
+                {
+                    id: 'demo-board-2', 
+                    name: 'Training Board',
+                    location: 'Keller',
+                    status: 'online'
+                },
+                {
+                    id: 'demo-board-3',
+                    name: 'Gäste Board',
+                    location: 'Garage',
+                    status: 'offline'
+                }
+            ];
+            displayBoards(mockBoards);
+            
+            // Erstes Board automatisch auswählen
+            if (mockBoards.length > 0) {
+                setTimeout(() => {
+                    const firstBoard = mockBoards[0];
+                    const firstBoardElement = document.querySelector('.board-item');
+                    if (firstBoardElement) {
+                        selectBoard(firstBoard, firstBoardElement);
+                    }
+                }, 500);
+            }
+        } else {
+            displayBoards(boards);
+            
+            // Erstes Board automatisch auswählen
+            if (boards.length > 0) {
+                setTimeout(() => {
+                    const firstBoard = boards[0];
+                    const firstBoardElement = document.querySelector('.board-item');
+                    if (firstBoardElement) {
+                        selectBoard(firstBoard, firstBoardElement);
+                    }
+                }, 500);
+            }
+        }
+        
+        console.log('✅ Boards geladen');
     } catch (error) {
         console.error('Fehler beim Laden der Boards:', error);
+        showNotification('Fehler beim Laden der Boards!', 'error');
     }
 }
 
@@ -252,18 +280,26 @@ async function createNewBoard() {
         const boardLocation = prompt('Standort eingeben:', 'Wohnzimmer');
         if (!boardLocation) return;
         
-        // Generiere echte Board ID und API Key
-        const boardId = generateBoardId();
-        const apiKey = generateApiKey();
+        // API-Aufruf für Board-Erstellung
+        const response = await fetch('/api/scheiben', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: boardName,
+                location: boardLocation,
+                status: 'online',
+                url: 'http://localhost:3000'
+            })
+        });
         
-        const newBoard = {
-            id: boardId,
-            name: boardName,
-            location: boardLocation,
-            status: 'online',
-            apiKey: apiKey,
-            url: `http://localhost:3000` // Desktop App URL
-        };
+        if (!response.ok) {
+            throw new Error('Fehler beim Erstellen des Boards');
+        }
+        
+        const result = await response.json();
+        const newBoard = result.eintrag;
         
         // Board-Details anzeigen
         showBoardDetails(newBoard);

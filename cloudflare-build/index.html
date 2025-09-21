@@ -3,132 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autodarts Trainer - GitHub Pages</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-        
-        .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 2rem;
-        }
-        
-        .logo {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #00d4ff;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-            margin-bottom: 1rem;
-        }
-        
-        .subtitle {
-            font-size: 1.5rem;
-            color: #ffffff;
-            margin-bottom: 2rem;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #00d4ff, #0099cc);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
-            margin: 0.5rem;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
-        }
-        
-        .description {
-            margin: 2rem 0;
-            color: #ccc;
-            line-height: 1.6;
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-        
-        .feature {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .feature h3 {
-            color: #00d4ff;
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature p {
-            color: #ccc;
-            font-size: 0.9rem;
-        }
-    </style>
+    <title>🎯 Autodarts Trainer - Lokal</title>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="container">
-        <div class="logo">🎯 Autodarts Trainer</div>
-        <div class="subtitle">Professionelles Dart-Training mit KI</div>
+        <header class="header">
+            <h1>🎯 Autodarts Trainer</h1>
+            <p>Lokale Version - Alle Daten werden lokal gespeichert</p>
+        </header>
         
-        <div class="description">
-            Willkommen beim Autodarts Trainer! Eine moderne Web-Anwendung für professionelles Dart-Training 
-            mit automatischer Score-Erkennung und verschiedenen Trainingsmodi.
-        </div>
-        
-        <a href="play-interface.html" class="btn">🚀 Spiel starten</a>
-        <a href="https://github.com/spitzbuwe/autodart" class="btn">📁 GitHub Repository</a>
-        
-        <div class="features">
-            <div class="feature">
-                <h3>🎮 Spielmodi</h3>
-                <p>170 Checkout, 123-Leiter, Target Focus und mehr</p>
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="section">
+                    <h3>📋 Meine Boards</h3>
+                    <div class="demo-hint">
+                        💡 Lokale Speicherung: Boards werden im Browser gespeichert
+                    </div>
+                    <button onclick="createNewBoard()" class="btn btn-primary">➕ Neues Board</button>
+                    <ul id="boardList" class="board-list"></ul>
+                </div>
             </div>
-            <div class="feature">
-                <h3>📹 Kamera-Integration</h3>
-                <p>Automatische Score-Erkennung mit Webcam</p>
-        </div>
-            <div class="feature">
-                <h3>📊 Statistiken</h3>
-                <p>Detaillierte Trainingsstatistiken und Fortschritt</p>
-        </div>
-            <div class="feature">
-                <h3>🔧 Kalibrierung</h3>
-                <p>Einfache Kamera-Kalibrierung für optimale Erkennung</p>
+            
+            <div class="game-area">
+                <div class="game-mode-section">
+                    <h3>🎮 Spielmodi</h3>
+                    <div class="game-mode-grid" id="gameModeGrid">
+                        <!-- Spielmodi werden hier geladen -->
+                    </div>
+                </div>
+                
+                <div class="current-score">
+                    <h2 id="currentScore">501</h2>
+                    <p>Wählen Sie einen Spielmodus</p>
+                </div>
+                
+                <div class="control-panel">
+                    <button id="startGameBtn" onclick="startGame()" class="btn btn-success" disabled>🎮 Spiel starten</button>
+                    <button id="resetGameBtn" onclick="resetGame()" class="btn btn-warning" disabled>🔄 Zurücksetzen</button>
+                    <button id="undoBtn" onclick="undoLastDart()" class="btn btn-secondary" disabled>↶ Rückgängig</button>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="section">
+                    <h3>📹 Kamera</h3>
+                    <div id="cameraStatus" class="status offline">Kamera nicht verbunden</div>
+                    <button onclick="startCalibration()" class="btn btn-info">🔧 Kalibrierung starten</button>
+                </div>
+                
+                <div class="section">
+                    <h3>🎯 Spielsteuerung</h3>
+                    <div class="manual-scoring">
+                        <button onclick="manualScore(25)" class="score-btn">Bull (25)</button>
+                        <button onclick="manualScore(50)" class="score-btn">Bullseye (50)</button>
+                        <button onclick="manualScore(20)" class="score-btn">20</button>
+                        <button onclick="manualScore(19)" class="score-btn">19</button>
+                        <button onclick="manualScore(18)" class="score-btn">18</button>
+                        <button onclick="manualScore(17)" class="score-btn">17</button>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>📈 Aktuelle Session</h3>
+                    <div class="session-stats">
+                        <div>Runden: <span id="rounds">0</span></div>
+                        <div>Zeit: <span id="sessionTime">00:00</span></div>
+                        <div>Präzision: <span id="precision">0%</span></div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="description">
-            <strong>Hinweis:</strong> Diese Anwendung läuft vollständig im Browser und benötigt keine Installation. 
-            Für die beste Erfahrung verwenden Sie Chrome oder Firefox.
+        <div class="stats-section">
+            <h3>📊 Statistiken</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Darts geworfen:</span>
+                    <span id="totalDarts">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Durchschnitt:</span>
+                    <span id="average">0.00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Höchstes Score:</span>
+                    <span id="highestScore">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Checkouts:</span>
+                    <span id="checkouts">0</span>
+                </div>
+            </div>
         </div>
     </div>
-
-    <script>
-        // Automatische Weiterleitung nach 3 Sekunden
-        setTimeout(() => {
-            window.location.href = 'play-interface.html';
-        }, 3000);
-    </script>
+    
+    <script src="assets/js/app.js"></script>
 </body>
 </html>
